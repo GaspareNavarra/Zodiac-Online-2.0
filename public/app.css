@@ -58,7 +58,7 @@ button { font: inherit; color: inherit; }
   border: 1px solid var(--line); background: color-mix(in srgb, var(--surface) 70%, transparent);
   display: grid; place-items: center; cursor: pointer; transition: transform .2s var(--ease);
 }
-.icon-btn svg { width: 19px; height: 19px; }
+.icon-btn svg { width: 19px; height: 19px; color: var(--accent); }
 .icon-btn:active { transform: scale(.92); }
 
 .wheel-wrap {
