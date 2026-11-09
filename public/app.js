@@ -46,7 +46,7 @@ const PERIODS = [
 ];
 const periodById = Object.fromEntries(PERIODS.map(p => [p.id, p]));
 
-const DEFAULTS = { preset: 'notte', ...PRESETS.notte, font: 'classico', rating: 'ring', scale: 1, radius: 22, meter: 'el' };
+const DEFAULTS = { preset: 'notte', ...PRESETS.notte, font: 'classico', rating: 'ring', scale: 1, radius: 22, meter: 'el', icon: 'luna' };
 // colore della barra nel riquadro "La giornata": 'el' (elemento del segno), 'accent' o un colore #hex
 const meterColor = m => m === 'accent' ? 'var(--accent)' : /^#[0-9a-f]{6}$/i.test(m || '') ? m : 'var(--el)';
 
@@ -79,6 +79,66 @@ function applyTheme() {
   r.setProperty('--font-body', f.body);
   document.querySelector('meta[name=theme-color]').content = theme.bg;
   store.set('oroscopo.theme', theme);
+  applyIcon();
+}
+
+// ---------- icona dell'app ----------
+// 'luna' = l'icona originale (file statici); altrimenti l'id di un segno: glifo nel colore d'accento
+// sullo stesso fondo notturno con le stelle. Telefono e browser leggono l'icona all'installazione.
+const ICON_INK = '#100e1c', ICON_STAR = '#f3eefe', ICON_MOON = '#e8c26a';
+
+function drawIcon(size, icon, accent) {
+  const c = document.createElement('canvas');
+  c.width = c.height = size;
+  const x = c.getContext('2d'), k = size / 512;
+  x.fillStyle = ICON_INK;
+  x.beginPath(); x.roundRect(0, 0, size, size, 112 * k); x.fill();
+  const dot = (cx, cy, r, col) => { x.fillStyle = col; x.beginPath(); x.arc(cx * k, cy * k, r * k, 0, Math.PI * 2); x.fill(); };
+  if (!byId[icon]) {
+    // l'icona originale, identica a public/icon.svg
+    [[370, 350, 10], [400, 130, 7], [130, 120, 6]].forEach(([a, b, r]) => dot(a, b, r, ICON_STAR));
+    dot(256, 256, 150, ICON_MOON);
+    dot(316, 216, 138, ICON_INK);
+    return c;
+  }
+  // cielo stellato lungo i bordi, lontano dal glifo
+  [[428, 410, 9], [404, 112, 7], [112, 116, 6], [84, 316, 4], [256, 62, 3], [150, 438, 4]].forEach(([a, b, r]) => dot(a, b, r, ICON_STAR));
+  x.fillStyle = accent;
+  x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.font = `${Math.round(290 * k)}px 'Segoe UI Symbol', 'Apple Symbols', 'Noto Sans Symbols', serif`;
+  x.fillText(byId[icon].g + VS, 256 * k, 270 * k);
+  return c;
+}
+
+let iconKey = null, iconTimer;
+function applyIcon() {
+  const icon = byId[theme.icon] ? theme.icon : 'luna';
+  const key = icon === 'luna' ? 'luna' : `${icon}-${theme.accent.slice(1).toLowerCase()}`;
+  if (key === iconKey) return;
+  iconKey = key;
+  const fav = document.querySelector('link[rel=icon]');
+  const touch = document.querySelector('link[rel=apple-touch-icon]');
+  const manifest = document.querySelector('link[rel=manifest]');
+  clearTimeout(iconTimer);
+  if (icon === 'luna') {
+    fav.href = 'icon.svg'; fav.type = 'image/svg+xml';
+    touch.href = 'apple-touch-icon.png';
+    manifest.href = 'manifest.webmanifest';
+    return;
+  }
+  fav.type = 'image/png';
+  fav.href = drawIcon(64, icon, theme.accent).toDataURL('image/png');
+  // al server solo quando l'accento smette di cambiare (il selettore colore manda molti eventi)
+  iconTimer = setTimeout(async () => {
+    const images = {};
+    for (const s of [180, 192, 512]) images[s] = drawIcon(s, icon, theme.accent).toDataURL('image/png');
+    try {
+      const res = await fetch('/api/icon', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ key, images }) });
+      if (!res.ok || key !== iconKey) return;
+      touch.href = `/icons/${key}-180.png`;
+      manifest.href = `/manifest.webmanifest?icon=${key}`;
+    } catch {}
+  }, 600);
 }
 
 function setTheme(patch, rerender = false) {
@@ -117,6 +177,12 @@ function renderSettings() {
       <input type="color" id="meterColor" value="${custom ? theme.meter : theme.accent}">
       <span>Scegli</span>
     </label>`;
+
+  const curIcon = byId[theme.icon] ? theme.icon : 'luna';
+  $('#iconPick').innerHTML = [{ id: 'luna', name: 'Luna' }, ...SIGNS].map(s => `
+    <button data-icon="${s.id}" aria-pressed="${curIcon === s.id}" aria-label="${s.name}" title="${s.name}">
+      <img src="${drawIcon(88, s.id, theme.accent).toDataURL('image/png')}" alt="">
+    </button>`).join('');
 
   $('#textScale').value = theme.scale;
   $('#radius').value = theme.radius;
@@ -179,6 +245,7 @@ function bindSettings() {
     if (b.dataset.font) setTheme({ font: b.dataset.font });
     if (b.dataset.rating) setTheme({ rating: b.dataset.rating }, true);
     if (b.dataset.meter) setTheme({ meter: b.dataset.meter });
+    if (b.dataset.icon) setTheme({ icon: b.dataset.icon });
   });
   sheet.addEventListener('input', e => {
     const t = e.target;

@@ -325,6 +325,13 @@ main { touch-action: pan-y; }
 .seg { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
 .seg button { text-align: center; font-size: .8em; padding: 10px 4px; }
 .seg.three { grid-template-columns: repeat(3, 1fr); }
+
+/* scelta dell'icona dell'app: 13 anteprime (luna + 12 segni) */
+.icons { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+.icons button { border: 2px solid transparent; border-radius: 14px; padding: 2px; background: none; cursor: pointer; aspect-ratio: 1; }
+.icons button[aria-pressed="true"] { border-color: var(--accent); }
+.icons img { display: block; width: 100%; height: 100%; border-radius: 10px; }
+.opt .hint { margin: 10px 0 0; font-size: .78em; color: var(--muted); }
 /* terza opzione: un colore a scelta, il cerchio mostra il colore attuale */
 .seg .pick {
   display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;

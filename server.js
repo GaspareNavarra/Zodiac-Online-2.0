@@ -141,6 +141,10 @@ const MIME = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=u
   '.js': 'text/javascript; charset=utf-8', '.json': 'application/json; charset=utf-8',
   '.svg': 'image/svg+xml', '.webmanifest': 'application/manifest+json', '.png': 'image/png' };
 
+const ICONS_DIR = path.join(DATA_DIR, 'icons');
+const ICON_KEY = new RegExp(`^(${SIGNS.join('|')})-[0-9a-f]{6}$`);
+const ICON_SIZES = [180, 192, 512];
+
 function sendJson(res, code, obj) {
   res.writeHead(code, { 'Content-Type': MIME['.json'], 'Cache-Control': 'no-store' });
   res.end(JSON.stringify(obj));
@@ -148,6 +152,47 @@ function sendJson(res, code, obj) {
 
 http.createServer(async (req, res) => {
   const url = new URL(req.url, 'http://x');
+
+  // icona personalizzata: il browser la disegna e la invia, il server la salva e la mette nel manifest
+  if (url.pathname === '/api/icon' && req.method === 'POST') {
+    let body = '';
+    for await (const chunk of req) {
+      body += chunk;
+      if (body.length > 1_500_000) return sendJson(res, 413, { error: 'icona troppo grande' });
+    }
+    try {
+      const { key, images } = JSON.parse(body);
+      if (!ICON_KEY.test(key || '')) throw new Error('nome icona non valido');
+      fs.mkdirSync(ICONS_DIR, { recursive: true });
+      for (const size of ICON_SIZES) {
+        const m = /^data:image\/png;base64,([A-Za-z0-9+/=]+)$/.exec(images?.[size] || '');
+        if (!m) throw new Error(`manca l'immagine da ${size}px`);
+        fs.writeFileSync(path.join(ICONS_DIR, `${key}-${size}.png`), Buffer.from(m[1], 'base64'));
+      }
+      return sendJson(res, 200, { ok: true });
+    } catch (err) {
+      return sendJson(res, 400, { error: err.message });
+    }
+  }
+
+  const iconFile = /^\/icons\/([a-z]+-[0-9a-f]{6})-(\d+)\.png$/.exec(url.pathname);
+  if (iconFile) {
+    return fs.readFile(path.join(ICONS_DIR, `${iconFile[1]}-${iconFile[2]}.png`), (err, buf) => {
+      if (err) { res.writeHead(404); return res.end('Non trovato'); }
+      res.writeHead(200, { 'Content-Type': 'image/png', 'Cache-Control': 'public, max-age=31536000, immutable' });
+      res.end(buf);
+    });
+  }
+
+  if (url.pathname === '/manifest.webmanifest' && url.searchParams.has('icon')) {
+    const key = url.searchParams.get('icon');
+    const manifest = JSON.parse(fs.readFileSync(path.join(PUBLIC_DIR, 'manifest.webmanifest'), 'utf8'));
+    if (ICON_KEY.test(key) && fs.existsSync(path.join(ICONS_DIR, `${key}-512.png`))) {
+      manifest.icons = [192, 512].map(s => ({ src: `/icons/${key}-${s}.png`, sizes: `${s}x${s}`, type: 'image/png' }));
+    }
+    res.writeHead(200, { 'Content-Type': MIME['.webmanifest'], 'Cache-Control': 'no-store' });
+    return res.end(JSON.stringify(manifest));
+  }
 
   if (url.pathname === '/api/oroscopo') {
     const period = url.searchParams.get('period') || 'giornaliero';
