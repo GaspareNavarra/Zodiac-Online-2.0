@@ -104,6 +104,26 @@ button { font: inherit; color: inherit; }
 .fact .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--el); box-shadow: 0 0 10px var(--el); }
 .fact .k { color: var(--muted); }
 
+/* ---------------- periodo (oggi / settimana / mese / anno) ---------------- */
+.periods {
+  --at: 0;
+  position: relative; display: grid; grid-template-columns: repeat(4, 1fr);
+  margin: 0 0 12px; padding: 4px; border-radius: 99px;
+  background: color-mix(in srgb, var(--surface) 80%, transparent); border: 1px solid var(--line);
+}
+.periods button {
+  position: relative; z-index: 1; border: 0; background: none; cursor: pointer;
+  padding: 9px 4px; border-radius: 99px; font-size: .84em; font-weight: 500;
+  color: var(--muted); transition: color .3s;
+}
+.periods button[aria-selected="true"] { color: var(--bg); }
+/* la pillola scorre sotto la voce scelta */
+.periods .pill {
+  position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc((100% - 8px) / 4);
+  border-radius: 99px; background: var(--text);
+  transform: translateX(calc(var(--at) * 100%)); transition: transform .45s var(--ease);
+}
+
 /* ---------------- barra segni ---------------- */
 .signs {
   display: flex; gap: 6px; overflow-x: auto; scroll-snap-type: x proximity;
@@ -174,13 +194,14 @@ button { font: inherit; color: inherit; }
 .mood .sub { margin: 4px 0 0; font-size: .78em; color: var(--muted); }
 .mood .meter { display: flex; gap: 4px; margin-top: 10px; }
 .mood .meter i { flex: 1; height: 4px; border-radius: 4px; background: var(--soft); }
-.mood .meter i.on { background: var(--el); }
+.mood .meter i.on { background: var(--meter, var(--el)); }
 
 /* testo */
 .reading .lead {
   margin: 0 0 12px; font-family: var(--font-display); font-size: 1.28em; line-height: 1.32; font-weight: 400;
   letter-spacing: -.005em;
 }
+.reading .rest + .rest { margin-top: .9em; }
 .reading .rest { margin: 0; font-size: .97em; line-height: 1.65; color: color-mix(in srgb, var(--text) 82%, var(--muted)); }
 
 /* affinità */
@@ -259,6 +280,23 @@ main { touch-action: pan-y; }
 .fonts .b { font-size: .78em; color: var(--muted); }
 .seg { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
 .seg button { text-align: center; font-size: .8em; padding: 10px 4px; }
+.seg.three { grid-template-columns: repeat(3, 1fr); }
+/* terza opzione: un colore a scelta, il cerchio mostra il colore attuale */
+.seg .pick {
+  display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;
+  border: 1px solid color-mix(in srgb, var(--text) 14%, transparent); border-radius: 12px;
+  font-size: .8em; padding: 6px 4px;
+}
+.seg .pick[data-on="true"] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, transparent); }
+.seg .pick:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+.seg .pick input {
+  width: 24px; height: 24px; flex: none; border-radius: 50%; padding: 0; cursor: pointer;
+  border: 2px solid color-mix(in srgb, var(--text) 20%, transparent); background: none;
+  -webkit-appearance: none; appearance: none;
+}
+.seg .pick input::-webkit-color-swatch-wrapper { padding: 0; }
+.seg .pick input::-webkit-color-swatch { border: 0; border-radius: 50%; }
+.seg .pick input::-moz-color-swatch { border: 0; border-radius: 50%; }
 
 .range { display: grid; grid-template-columns: 1fr 1.3fr; align-items: center; gap: 12px; font-size: .88em; padding: 6px 0; }
 .range input { width: 100%; accent-color: var(--accent); }

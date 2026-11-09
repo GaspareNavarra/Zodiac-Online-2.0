@@ -1,235 +1,236 @@
 {
-  "day": "Lunedì 9 novembre",
-  "fetchedAt": "2026-11-09T16:03:45.936Z",
-  "sourceUpdated": "2026-11-08T19:16:18",
+  "period": "giornaliero",
+  "day": "Martedì 10 novembre",
+  "fetchedAt": "2026-11-09T20:45:45.857Z",
+  "sourceUpdated": "2026-11-09T17:57:13",
   "signs": {
-    "cancro": {
-      "sign": "cancro",
-      "range": "22 GIUGNO - 22 LUGLIO",
-      "day": "Lunedì 9 novembre",
-      "ratings": {
-        "fortuna": 3,
-        "amore": 4,
-        "soldi": 5
-      },
-      "text": "Lunedì di provvidenziale tregua interiore, silenzioso raccoglimento e strategie finanziarie coperte. La Luna nella dodicesima casa vi suggerisce di non esibire subito i vostri progetti, ma di dedicare le ore d’ufficio alla cura della vostra quiete mentale e alla protezione del patrimonio. Le finanze godono di un’ottima tutela astrale. In amore la serata vi riserva un nido protetto, intimo e lontano da sguardi indiscreti.",
-      "word": "Ritirata",
-      "affinity": {
-        "amore": "bilancia",
-        "amicizia": "capricorno",
-        "lavoro": "gemelli"
-      },
-      "link": "https://onlyoroscopo.com/oroscopo-giornaliero-cancro/",
-      "updated": "2026-11-08T19:16:18"
-    },
     "pesci": {
       "sign": "pesci",
       "range": "20 febbraio - 20 marzo",
-      "day": "Lunedì 9 novembre",
-      "ratings": {
-        "fortuna": 3,
-        "amore": 4,
-        "soldi": 3
-      },
-      "text": "Lunedì di profondo raccoglimento intimo e protezione delle vostre radici familiari. L’influsso lunare vi spinge a ritagliarvi uno spazio di quiete domestica, lontano dal frastuono esterno, per riordinare i pensieri e ricaricare le batterie emotive. La gestione economica richiede un basso profilo e prudenza nelle spese. In amore la tenerezza e la comprensione empatica salvano la serata da ogni piccola tensione.",
-      "word": "Tensione",
-      "affinity": {
-        "amore": "ariete",
-        "amicizia": "capricorno",
-        "lavoro": "vergine"
-      },
-      "link": "https://onlyoroscopo.com/oroscopo-giornaliero-pesci/",
-      "updated": "2026-11-08T19:16:18"
-    },
-    "acquario": {
-      "sign": "acquario",
-      "range": "21 gennaio - 19 febbraio",
-      "day": "Lunedì 9 novembre",
+      "day": "Martedì 10 novembre",
       "ratings": {
         "fortuna": 5,
         "amore": 5,
         "soldi": 4
       },
-      "text": "Lunedì brillante, creativo e baciato da una vena artistica e intellettuale straordinaria! Il trigono d’aria della Luna accende la vostra quinta casa solare, regalandovi intuizioni geniali, idee folgoranti per nuovi progetti e un fascino magnetico che conquista chiunque incontriate sulla vostra strada. In amore la leggerezza si fa seduzione pura, regalando momenti di divertimento e complicità unici.",
-      "word": "Sedurre",
-      "affinity": {
-        "amore": "leone",
-        "amicizia": "bilancia",
-        "lavoro": "capricorno"
-      },
-      "link": "https://onlyoroscopo.com/oroscopo-giornaliero-acquario/",
-      "updated": "2026-11-08T19:15:12"
-    },
-    "capricorno": {
-      "sign": "capricorno",
-      "range": "22 dicembre - 20 gennaio",
-      "day": "Lunedì 9 novembre",
-      "ratings": {
-        "fortuna": 4,
-        "amore": 3,
-        "soldi": 5
-      },
-      "text": "Lunedì di superba efficienza logistica e riordino maniacale della vostra agenda professionale. Sfruttate l’energia della giornata per smaltire pratiche fiscali o organizzative rimaste in sospeso, applicando il vostro rigore analitico senza distrazioni. Le finanze godono di un’ottima tenuta. In amore la stabilità passa attraverso piccoli gesti concreti e una rassicurante presenza quotidiana.",
-      "word": "Quadra",
-      "affinity": {
-        "amore": "acquario",
-        "amicizia": "toro",
-        "lavoro": "pesci"
-      },
-      "link": "https://onlyoroscopo.com/oroscopo-giornaliero-capricorno/",
-      "updated": "2026-11-08T19:14:46"
-    },
-    "sagittario": {
-      "sign": "sagittario",
-      "range": "23 novembre - 21 dicembre",
-      "day": "Lunedì 9 novembre",
-      "ratings": {
-        "fortuna": 3,
-        "amore": 4,
-        "soldi": 3
-      },
-      "text": "Lunedì che vi chiede di stringere i denti e di accettare un confronto serrato con soci o partner d’affari. La Luna in opposizione vi costringe a scendere a patti e a rivedere una strategia contrattuale che non convince del tutto l’altra parte. Mantenete la calma e puntate sulla vostra diplomazia. In amore la serata richiede pazienza: evitate scatti d’orgoglio e ascoltate le ragioni di chi vi sta accanto.",
-      "word": "Mediare",
-      "affinity": {
-        "amore": "cancro",
-        "amicizia": "bilancia",
-        "lavoro": "vergine"
-      },
-      "link": "https://onlyoroscopo.com/oroscopo-giornaliero-sagittario/",
-      "updated": "2026-11-08T19:14:25"
-    },
-    "scorpione": {
-      "sign": "scorpione",
-      "range": "22 Ottobre - 23 Novembre",
-      "day": "Lunedì 9 novembre",
-      "ratings": {
-        "fortuna": 4,
-        "amore": 4,
-        "soldi": 5
-      },
-      "text": "Lunedì di profonda introspezione economica e gestione strategica delle risorse condivise o dei beni patrimoniali. La configurazione astrale vi spinge a esaminare con lucidità implacabile questioni fiscali, mutui o investimenti a lungo termine, eliminando ogni rischio superfluo. Niente azzardi. In amore l’intensità emotiva cerca la fusione totale, esigendo lealtà assoluta e trasparenza senza riserve.",
-      "word": "Scremare",
-      "affinity": {
-        "amore": "vergine",
-        "amicizia": "sagittario",
-        "lavoro": "gemelli"
-      },
-      "link": "https://onlyoroscopo.com/oroscopo-giornaliero-scorpione/",
-      "updated": "2026-11-08T19:13:28"
-    },
-    "bilancia": {
-      "sign": "bilancia",
-      "range": "23 settembre - 22 ottobre",
-      "day": "Lunedì 9 novembre",
-      "ratings": {
-        "fortuna": 5,
-        "amore": 5,
-        "soldi": 4
-      },
-      "text": "Lunedì magnifico, baciato da un’apertura di orizzonti formidabile e da una fortuna sfacciata nei contatti internazionali o negli studi! Il super trigono d’Aria della Luna dai Gemelli vi regala una giornata di svago intellettuale superiore, riunioni proficue e risposte burocratiche tanto attese quanto favorevoli. In amore la complicità basata su ideali condivisi e progetti futuri vola altissima.",
-      "word": "Spalancare",
+      "text": "Martedì magnifico, creativo, gioioso e baciato da un trigono d’acqua che vi incorona re incontrastati della giornata! La magnifica protezione della Luna dal Cancro accende il vostro settore della gioia di vivere, regalandovi ore di profonda ispirazione artistica, successi inaspettati e un romanticismo travolgente. Vi sentite finalmente compresi e desiderati. In amore la sintonia emotiva raggiunge vette celesti e indimenticabili.",
+      "word": "Comprensione",
       "affinity": {
         "amore": "vergine",
         "amicizia": "acquario",
         "lavoro": "cancro"
       },
+      "link": "https://onlyoroscopo.com/oroscopo-giornaliero-pesci/",
+      "updated": "2026-11-09T17:57:13"
+    },
+    "acquario": {
+      "sign": "acquario",
+      "range": "21 gennaio - 19 febbraio",
+      "day": "Martedì 10 novembre",
+      "ratings": {
+        "fortuna": 4,
+        "amore": 3,
+        "soldi": 4
+      },
+      "text": "Martedì orientato all’efficientamento della routine quotidiana, alla cura della forma fisica e all’ordine metodico degli spazi di lavoro. L’influsso lunare vi spinge a rimboccarvi le maniche per sbrigare una mole imponente di pratiche arretrate, rimettendo in sesto l’agenda con precisione metodica. I guadagni derivano da una dedizione costante. In amore la cura dei dettagli quotidiani vale più di mille dichiarazioni.",
+      "word": "Dedizione",
+      "affinity": {
+        "amore": "scorpione",
+        "amicizia": "gemelli",
+        "lavoro": "ariete"
+      },
+      "link": "https://onlyoroscopo.com/oroscopo-giornaliero-acquario/",
+      "updated": "2026-11-09T17:55:32"
+    },
+    "capricorno": {
+      "sign": "capricorno",
+      "range": "22 dicembre - 20 gennaio",
+      "day": "Martedì 10 novembre",
+      "ratings": {
+        "fortuna": 3,
+        "amore": 3,
+        "soldi": 4
+      },
+      "text": "Martedì che vi pone di fronte a specchi relazionali molto esigenti nei rapporti a due e nelle partnership professionali. Con la Luna in opposizione dal segno del Cancro, le pretese del partner o dei soci richiedono un ascolto attento e la disponibilità a mediare senza irrigidirvi dietro le vostre barriere difensive. La gestione del portafoglio è stabile. In amore vince la capacità di scendere a patti con generosità.",
+      "word": "Patteggiare",
+      "affinity": {
+        "amore": "scorpione",
+        "amicizia": "ariete",
+        "lavoro": "sagittario"
+      },
+      "link": "https://onlyoroscopo.com/oroscopo-giornaliero-capricorno/",
+      "updated": "2026-11-09T17:55:02"
+    },
+    "sagittario": {
+      "sign": "sagittario",
+      "range": "23 novembre - 21 dicembre",
+      "day": "Martedì 10 novembre",
+      "ratings": {
+        "fortuna": 3,
+        "amore": 4,
+        "soldi": 5
+      },
+      "text": "Martedì di profonda introspezione economica, revisione di contratti di prestito o gestione oculata delle risorse condivise. La configurazione celeste vi invita a esaminare con rigore tabelle di marcia fiscali o pendenze patrimoniali, agendo con la massima circospezione e senza azzardi. In amore l’intensità emotiva sale vertiginosamente: pretendete trasparenza assoluta e rifiutate categoricamente le mezze verità.",
+      "word": "Intenso",
+      "affinity": {
+        "amore": "scorpione",
+        "amicizia": "cancro",
+        "lavoro": "leone"
+      },
+      "link": "https://onlyoroscopo.com/oroscopo-giornaliero-sagittario/",
+      "updated": "2026-11-09T17:54:34"
+    },
+    "scorpione": {
+      "sign": "scorpione",
+      "range": "22 Ottobre - 23 Novembre",
+      "day": "Martedì 10 novembre",
+      "ratings": {
+        "fortuna": 5,
+        "amore": 5,
+        "soldi": 5
+      },
+      "text": "Martedì spettacolare, baciato da un allineamento d’acqua portentoso e da una fortuna sfacciata nei viaggi o negli studi superiori! Il favoloso trigono della Luna dal Cancro si fonde con il vostro blocco planetario, regalandovi una giornata di straordinario successo personale, intuizioni geniali e aperture mentali formidabili. Sbaragliate ogni ostacolo con classe. In amore la passione brucia di una fiamma totale, viscerale e indimenticabile.",
+      "word": "Ardente",
+      "affinity": {
+        "amore": "acquario",
+        "amicizia": "cancro",
+        "lavoro": "pesci"
+      },
+      "link": "https://onlyoroscopo.com/oroscopo-giornaliero-scorpione/",
+      "updated": "2026-11-09T17:54:05"
+    },
+    "bilancia": {
+      "sign": "bilancia",
+      "range": "23 settembre - 22 ottobre",
+      "day": "Martedì 10 novembre",
+      "ratings": {
+        "fortuna": 3,
+        "amore": 3,
+        "soldi": 4
+      },
+      "text": "Martedì di grande visibilità istituzionale, ambizioni professionali messe in primo piano e verifiche con i superiori. La Luna alta nel cielo vi spinge a far valere le vostre prerogative di fronte a capi o interlocutori influenti, richiedendo una gestione impeccabile della vostra reputazione pubblica. Le finanze meritano prudenza negli investimenti speculativi. In amore la comprensione reciproca richiede maturità e accordi chiari.",
+      "word": "Cattedra",
+      "affinity": {
+        "amore": "gemelli",
+        "amicizia": "capricorno",
+        "lavoro": "toro"
+      },
       "link": "https://onlyoroscopo.com/oroscopo-giornaliero-bilancia/",
-      "updated": "2026-11-08T19:13:04"
+      "updated": "2026-11-09T17:53:29"
     },
     "vergine": {
       "sign": "vergine",
       "range": "24 AGOSTO - 22 SETTEMBRE",
-      "day": "Lunedì 9 novembre",
+      "day": "Martedì 10 novembre",
       "ratings": {
-        "fortuna": 3,
-        "amore": 3,
+        "fortuna": 5,
+        "amore": 5,
         "soldi": 4
       },
-      "text": "Lunedì che vi pone di fronte a verifiche professionali di alto livello e responsabilità istituzionali. La quadratura della Luna dai Gemelli vi chiede di gestire con polso fermo le richieste dei superiori o di un cliente particolarmente esigente; risolverete tutto grazie alla vostra precisione geometrica. Il portafoglio richiede prudenza. In amore cercate nel partner un supporto leale e privo di retorica.",
-      "word": "Investitura",
+      "text": "Martedì eccezionale, animato da una vita sociale effervescente, progetti di gruppo e alleanze professionali vincenti! Il sestile protettivo della Luna dal Cancro vi colloca al centro di reti di networking stimolanti, dove le vostre competenze organizzative ricevono finalmente l’ammirazione e il plauso che meritate. La fortuna vi sorride nei contatti. In amore l’amicizia profonda si trasforma in un legame d’affetto solido e complice.",
+      "word": "Coalizione",
       "affinity": {
-        "amore": "bilancia",
-        "amicizia": "acquario",
-        "lavoro": "toro"
+        "amore": "scorpione",
+        "amicizia": "gemelli",
+        "lavoro": "pesci"
       },
       "link": "https://onlyoroscopo.com/oroscopo-giornaliero-vergine/",
-      "updated": "2026-11-08T19:12:38"
+      "updated": "2026-11-09T17:53:10"
     },
     "leone": {
       "sign": "leone",
       "range": "23 LUGLIO - 23 AGOSTO",
-      "day": "Lunedì 9 novembre",
+      "day": "Martedì 10 novembre",
+      "ratings": {
+        "fortuna": 3,
+        "amore": 4,
+        "soldi": 4
+      },
+      "text": "Martedì di provvidenziale tregua lontano dai riflettori, votato al raccoglimento e alla pianificazione strategica dietro le quinte. La Luna nella dodicesima casa vi suggerisce di non esibire i vostri piani futuri, ma di dedicarvi alla cura della vostra quiete mentale e a un’analisi silenziosa dei vostri dossier d’affari. Le finanze richiedono basso profilo. In amore la riservatezza protegge il rapporto da interferenze esterne.",
+      "word": "Proteggere",
+      "affinity": {
+        "amore": "capricorno",
+        "amicizia": "cancro",
+        "lavoro": "vergine"
+      },
+      "link": "https://onlyoroscopo.com/oroscopo-giornaliero-leone/",
+      "updated": "2026-11-09T17:52:47"
+    },
+    "cancro": {
+      "sign": "cancro",
+      "range": "22 GIUGNO - 22 LUGLIO",
+      "day": "Martedì 10 novembre",
       "ratings": {
         "fortuna": 5,
         "amore": 5,
-        "soldi": 4
+        "soldi": 5
       },
-      "text": "Lunedì spettacolare, entusiasmante e baciato da una fortuna sfacciata nei progetti di gruppo! Il magnifico trigono della Luna dai Gemelli si fonde con il vostro elemento, regalandoci una giornata di straordinario successo sociale, networking di alto livello e intuizioni brillanti. Sbaragliate qualsiasi ostacolo con un sorriso carismatico. In amore la complicità si tinge di tinte calde, avventurose e profondamente appaganti.",
-      "word": "Networking",
+      "text": "Siete i sovrani assoluti, magnetici e coccolati del firmamento! Con l’ingresso della Luna nel vostro segno in trigono perfetto con Venere, emanate un fascino irresistibile e un’empatia capace di conquistare chiunque. Sbaragliate la concorrenza professionale grazie a un’intuizione formidabile che anticipa le mosse altrui. In amore vivete emozioni intensissime, fatte di sguardi complessi, promesse sincere e una passione che sa di magia pura.",
+      "word": "Incanto",
       "affinity": {
-        "amore": "acquario",
-        "amicizia": "gemelli",
-        "lavoro": "bilancia"
+        "amore": "leone",
+        "amicizia": "pesci",
+        "lavoro": "toro"
       },
-      "link": "https://onlyoroscopo.com/oroscopo-giornaliero-leone/",
-      "updated": "2026-11-08T19:11:56"
+      "link": "https://onlyoroscopo.com/oroscopo-giornaliero-cancro/",
+      "updated": "2026-11-09T17:52:16"
     },
     "gemelli": {
       "sign": "gemelli",
       "range": "21 Maggio - 21 GIUGNO",
-      "day": "Lunedì 9 novembre",
+      "day": "Martedì 10 novembre",
+      "ratings": {
+        "fortuna": 4,
+        "amore": 3,
+        "soldi": 5
+      },
+      "text": "Martedì focalizzato sulla valorizzazione economica, sulla gestione pragmatica del portafoglio e sulla ricerca di nuove fonti di guadagno. Uscita la Luna dal vostro segno, l’attenzione si sposta sui compensi professionali, sui budget e sulla necessità di mettere al sicuro i frutti degli sforzi recenti con una lucidità contabile ineccepibile. In amore cercate stabilità tangibile, conferme materiali e rassicurazioni concrete per il futuro.",
+      "word": "Tesoretto",
+      "affinity": {
+        "amore": "vergine",
+        "amicizia": "ariete",
+        "lavoro": "leone"
+      },
+      "link": "https://onlyoroscopo.com/oroscopo-giornaliero-gemelli/",
+      "updated": "2026-11-09T17:51:57"
+    },
+    "toro": {
+      "sign": "toro",
+      "range": "21 aprile - 20 maggio",
+      "day": "Martedì 10 novembre",
       "ratings": {
         "fortuna": 5,
         "amore": 5,
         "soldi": 4
       },
-      "text": "Siete i monarchi scintillanti, geniali e festeggiati dell’intera giornata! Con la Luna nel vostro segno che riceve aspetti formidabili dal blocco planetario, la vostra agilità intellettuale e il vostro carisma sbaragliano qualsiasi concorrenza. Raccogliete consensi unanimi in ogni riunione e sbrigate pratiche complesse in tempo record. In amore il vostro fascino magnetico e la battuta fulminante lasciano letteralmente senza fiato chi vi sta accanto.",
-      "word": "Fascino",
+      "text": "Martedì magnifico, scorrevole e baciato da un’armonia comunicativa e sociale straordinaria! Il dolcissimo sestile della Luna dal Cancro si fonde con la vostra proverbiale concretezza, aprendo la porta a colloqui di lavoro illuminanti, accordi commerciali vantaggiosi e spostamenti brevi estremamente proficui. Le finanze godono di ottima salute. In amore la complicità verbale si tinge di sfumature calde, affettuose e profondamente rigeneranti.",
+      "word": "Sintonia",
       "affinity": {
-        "amore": "bilancia",
+        "amore": "capricorno",
         "amicizia": "pesci",
-        "lavoro": "toro"
-      },
-      "link": "https://onlyoroscopo.com/oroscopo-giornaliero-gemelli/",
-      "updated": "2026-11-08T19:10:45"
-    },
-    "toro": {
-      "sign": "toro",
-      "range": "21 aprile - 20 maggio",
-      "day": "Lunedì 9 novembre",
-      "ratings": {
-        "fortuna": 3,
-        "amore": 3,
-        "soldi": 5
-      },
-      "text": "Lunedì focalizzato sulla riorganizzazione patrimoniale e sulla ricerca di nuove fonti di guadagno stabile. L’influsso lunare vi spinge a esaminare con rigore i conti correnti, valutando investimenti a medio termine o ridcutendo compensi professionali con la vostra proverbiale concretezza. Il lavoro richiede applicazione metodica. In amore la stabilità emotiva si costruisce attraverso la presenza e l’ascolto attento.",
-      "word": "Mappatura",
-      "affinity": {
-        "amore": "scorpione",
-        "amicizia": "sagittario",
-        "lavoro": "vergine"
+        "lavoro": "cancro"
       },
       "link": "https://onlyoroscopo.com/oroscopo-giornaliero-toro/",
-      "updated": "2026-11-08T19:10:18"
+      "updated": "2026-11-09T17:49:35"
     },
     "ariete": {
       "sign": "ariete",
       "range": "21 MARZO - 19 APRILE",
-      "day": "Lunedì 9 novembre",
+      "day": "Martedì 10 novembre",
       "ratings": {
-        "fortuna": 4,
-        "amore": 5,
+        "fortuna": 3,
+        "amore": 4,
         "soldi": 3
       },
-      "text": "Lunedì che vi catapulta subito al centro dell’azione con una serie di incontri stimolanti e chiamate risolutive. Con la Luna in Gemelli che attiva la vostra terza casa, la mente è un vulcano di idee pronte a tradursi in contratti vantaggiosi o accordi lampo. La gestione del portafoglio richiede un monitoraggio accorto delle spese superflue. In amore la dialettica brillante e la complicità verbale accendono una sintonia irresistibile.",
-      "word": "Reattivo",
+      "text": "Martedì che richiede un cambio di passo deciso, invitandovi a frenare l’impulsività per occuparvi delle fondamenta domestiche o di una questione immobiliare rimasta in sospeso. Con la Luna in quadratura dal Cancro, potreste avvertire un lieve calo di energie fisiche: delegate il superfluo e proteggete il vostro equilibrio interiore. In amore la serata chiede dolcezza e la disponibilità a deporre le armi della competizione.",
+      "word": "Cambio",
       "affinity": {
-        "amore": "bilancia",
-        "amicizia": "acquario",
-        "lavoro": "toro"
+        "amore": "scorpione",
+        "amicizia": "cancro",
+        "lavoro": "acquario"
       },
       "link": "https://onlyoroscopo.com/oroscopo-giornaliero-ariete/",
-      "updated": "2026-11-08T19:09:53"
+      "updated": "2026-11-09T17:48:51"
     }
   }
 }

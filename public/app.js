@@ -38,7 +38,17 @@ const COLOR_FIELDS = [['bg', 'Sfondo'], ['surface', 'Blocchi'], ['text', 'Testo'
 const RATING_STYLES = [['ring', 'Anelli'], ['stars', 'Stelle'], ['dots', 'Pallini'], ['bar', 'Barra']];
 const MOODS = ['', 'Difficile', 'Impegnativa', 'Discreta', 'Buona', 'Ottima'];
 
-const DEFAULTS = { preset: 'notte', ...PRESETS.notte, font: 'classico', rating: 'ring', scale: 1, radius: 22 };
+const PERIODS = [
+  { id: 'giornaliero', tab: 'Oggi', mood: 'La giornata', missing: 'oggi' },
+  { id: 'settimanale', tab: 'Settimana', mood: 'La settimana', missing: 'di questa settimana' },
+  { id: 'mensile', tab: 'Mese', mood: 'Il mese', missing: 'di questo mese' },
+  { id: 'annuale', tab: 'Anno', mood: "L'anno", missing: "di quest'anno" },
+];
+const periodById = Object.fromEntries(PERIODS.map(p => [p.id, p]));
+
+const DEFAULTS = { preset: 'notte', ...PRESETS.notte, font: 'classico', rating: 'ring', scale: 1, radius: 22, meter: 'el' };
+// colore della barra nel riquadro "La giornata": 'el' (elemento del segno), 'accent' o un colore #hex
+const meterColor = m => m === 'accent' ? 'var(--accent)' : /^#[0-9a-f]{6}$/i.test(m || '') ? m : 'var(--el)';
 
 // ---------- storage sicuro ----------
 const store = {
@@ -48,6 +58,8 @@ const store = {
 
 let theme = { ...DEFAULTS, ...store.get('oroscopo.theme', {}) };
 let current = store.get('oroscopo.sign', 'ariete');
+let period = periodById[store.get('oroscopo.period', '')] ? store.get('oroscopo.period', '') : 'giornaliero';
+const dataBy = {}; // un set di dati per periodo
 let data = null;
 let wheelAngle = null;
 
@@ -61,6 +73,7 @@ function applyTheme() {
   r.setProperty('--stars-opacity', theme.stars);
   r.setProperty('--text-scale', theme.scale);
   r.setProperty('--radius', theme.radius + 'px');
+  r.setProperty('--meter', meterColor(theme.meter));
   const f = FONTS[theme.font] || FONTS.classico;
   r.setProperty('--font-display', f.display);
   r.setProperty('--font-body', f.body);
@@ -96,6 +109,15 @@ function renderSettings() {
   $('#ratingStyle').innerHTML = RATING_STYLES.map(([id, label]) =>
     `<button data-rating="${id}" aria-pressed="${theme.rating === id}">${label}</button>`).join('');
 
+  const custom = /^#/.test(theme.meter || '');
+  $('#meterStyle').innerHTML = `
+    <button data-meter="el" aria-pressed="${!custom && theme.meter !== 'accent'}">Elemento</button>
+    <button data-meter="accent" aria-pressed="${theme.meter === 'accent'}">Accento</button>
+    <label class="pick" data-on="${custom}">
+      <input type="color" id="meterColor" value="${custom ? theme.meter : theme.accent}">
+      <span>Scegli</span>
+    </label>`;
+
   $('#textScale').value = theme.scale;
   $('#radius').value = theme.radius;
   $('#stars').value = theme.stars;
@@ -116,6 +138,7 @@ function bindSettings() {
     if (b.dataset.preset) { const { name, ...p } = PRESETS[b.dataset.preset]; setTheme({ preset: b.dataset.preset, ...p }); }
     if (b.dataset.font) setTheme({ font: b.dataset.font });
     if (b.dataset.rating) setTheme({ rating: b.dataset.rating }, true);
+    if (b.dataset.meter) setTheme({ meter: b.dataset.meter });
   });
   sheet.addEventListener('input', e => {
     const t = e.target;
@@ -123,8 +146,9 @@ function bindSettings() {
     if (t.id === 'textScale') { theme.scale = +t.value; applyTheme(); }
     if (t.id === 'radius') { theme.radius = +t.value; applyTheme(); }
     if (t.id === 'stars') { theme.stars = +t.value; applyTheme(); }
+    if (t.id === 'meterColor') { theme.meter = t.value; applyTheme(); }
   });
-  sheet.addEventListener('change', e => { if (e.target.dataset.color) renderSettings(); });
+  sheet.addEventListener('change', e => { if (e.target.dataset.color || e.target.id === 'meterColor') renderSettings(); });
 
   $('#resetTheme').onclick = () => { theme = { ...DEFAULTS }; applyTheme(); renderSettings(); renderMain(); toast('Tema ripristinato'); };
   $('#exportTheme').onclick = async () => {
@@ -201,10 +225,21 @@ function prettyRange(r) {
   return r.toLowerCase().replace(/\s*-\s*/, ' – ');
 }
 
+// prima frase in evidenza; il resto mantiene i paragrafi (l'annuale ne ha diversi)
 function splitLead(text) {
-  const t = String(text || '').replace(/\n+/g, ' ').trim();
-  const m = t.match(/^(.+?[.!?])\s+(.+)$/s);
-  return m ? [m[1], m[2]] : [t, ''];
+  const paras = String(text || '').split(/\n{2,}/).map(p => p.trim()).filter(Boolean);
+  const first = paras.shift() || '';
+  const m = first.match(/^(.+?[.!?])\s+(.+)$/s);
+  if (m) paras.unshift(m[2]);
+  return [m ? m[1] : first, paras];
+}
+
+function periodLabel(d) {
+  const day = d?.day;
+  if (!day) return { giornaliero: 'Oggi', settimanale: 'Questa settimana', mensile: 'Questo mese', annuale: "Quest'anno" }[period];
+  if (period === 'settimanale') return `Settimana ${day.replace(/\s*-\s*/, '–')}`;
+  if (period === 'annuale') return `Anno ${day}`;
+  return day;
 }
 
 function renderHero(s, h) {
@@ -225,7 +260,8 @@ function renderMain(dir) {
   if (!data) { renderHero(s, null); return; }
   const h = data.signs[current];
   renderHero(s, h);
-  if (!h) { main.innerHTML = `<div class="state">L'oroscopo di ${esc(s.name)} oggi non è ancora uscito. Riprova più tardi.</div>`; return; }
+  const P = periodById[period];
+  if (!h) { main.innerHTML = `<div class="state">L'oroscopo di ${esc(s.name)} ${P.missing} non è ancora uscito. Riprova più tardi.</div>`; return; }
 
   const r = h.ratings || {};
   const rows = [['Fortuna', r.fortuna], ['Amore', r.amore], ['Soldi', r.soldi]].filter(([, v]) => v != null);
@@ -239,8 +275,8 @@ function renderMain(dir) {
     <div class="grid in">
       ${rows.map(([l, v]) => rateTile(l, v, i++)).join('')}
 
-      ${mood ? `<div class="tile half mood" style="--i:${i++}">
-        <p class="label">La giornata</p>
+      ${mood ? `<div class="tile ${h.word ? 'half' : ''} mood" style="--i:${i++}">
+        <p class="label">${P.mood}</p>
         <div>
           <p class="big">${MOODS[mood]}</p>
           <p class="sub">media ${avg.toFixed(1).replace('.', ',')} su 5</p>
@@ -255,10 +291,10 @@ function renderMain(dir) {
 
       <article class="tile reading" style="--i:${i++}">
         <p class="lead">${esc(lead)}</p>
-        ${rest ? `<p class="rest">${esc(rest)}</p>` : ''}
+        ${rest.map(p => `<p class="rest">${esc(p)}</p>`).join('')}
       </article>
 
-      <div class="tile" style="--i:${i++}">
+      ${h.affinity ? `<div class="tile" style="--i:${i++}">
         <div class="aff-head"><h2>Con chi va meglio oggi</h2></div>
         <div class="aff">
           ${affLabels.map(([k, l]) => {
@@ -266,10 +302,11 @@ function renderMain(dir) {
             return a ? `<button data-sign="${a.id}"><span class="g">${a.g}${VS}</span><span class="s">${a.name}</span><span class="t">${l}</span></button>` : '';
           }).join('')}
         </div>
-      </div>
+      </div>` : ''}
     </div>`;
 
-  main.querySelector('.aff').onclick = e => { const b = e.target.closest('[data-sign]'); if (b) select(b.dataset.sign); };
+  const aff = main.querySelector('.aff');
+  if (aff) aff.onclick = e => { const b = e.target.closest('[data-sign]'); if (b) select(b.dataset.sign); };
 
   main.classList.remove('enter', 'enter-l');
   if (dir) { void main.offsetWidth; main.classList.add(dir < 0 ? 'enter-l' : 'enter'); }
@@ -281,6 +318,45 @@ function renderSigns() {
       <span class="g">${s.g}${VS}</span><span class="n">${s.name}</span>
     </button>`).join('');
   $('#signs').onclick = e => { const b = e.target.closest('[data-sign]'); if (b) select(b.dataset.sign); };
+}
+
+function renderPeriods() {
+  const nav = $('#periods');
+  nav.innerHTML = PERIODS.map(p =>
+    `<button role="tab" data-period="${p.id}" aria-selected="${p.id === period}">${p.tab}</button>`).join('') +
+    '<i class="pill" aria-hidden="true"></i>';
+  nav.onclick = e => { const b = e.target.closest('[data-period]'); if (b) setPeriod(b.dataset.period); };
+  nav.onkeydown = e => {
+    const d = { ArrowRight: 1, ArrowLeft: -1 }[e.key];
+    if (!d) return;
+    const i = PERIODS.findIndex(p => p.id === period);
+    const next = PERIODS[(i + d + PERIODS.length) % PERIODS.length].id;
+    setPeriod(next);
+    nav.querySelector(`[data-period="${next}"]`).focus();
+  };
+  markPeriod();
+}
+
+function markPeriod() {
+  const nav = $('#periods');
+  const i = PERIODS.findIndex(p => p.id === period);
+  nav.style.setProperty('--at', i);
+  nav.querySelectorAll('[data-period]').forEach(b => {
+    const on = b.dataset.period === period;
+    b.setAttribute('aria-selected', on);
+    b.tabIndex = on ? 0 : -1;
+  });
+}
+
+function setPeriod(id) {
+  if (!periodById[id] || id === period) return;
+  period = id;
+  store.set('oroscopo.period', id);
+  markPeriod();
+  data = dataBy[id] || null;
+  $('#day').textContent = periodLabel(data);
+  if (data) renderMain(); else $('#main').innerHTML = '<div class="state">Sto leggendo le stelle…</div>';
+  load();
 }
 
 function renderFoot(warning) {
@@ -323,18 +399,23 @@ function bindSwipe(el) {
 
 // ---------- dati ----------
 async function load(force = false) {
+  const p = period;
   if (force) toast('Aggiorno…');
   try {
-    const res = await fetch('/api/oroscopo' + (force ? '?refresh' : ''), { cache: 'no-store' });
+    const res = await fetch(`/api/oroscopo?period=${p}` + (force ? '&refresh' : ''), { cache: 'no-store' });
     const json = await res.json();
     if (!res.ok) throw new Error(json.error || `il server ha risposto ${res.status}`);
-    const changed = !data || data.fetchedAt !== json.fetchedAt;
+    const prev = dataBy[p];
+    dataBy[p] = json;
+    if (p !== period) return; // nel frattempo è stato scelto un altro periodo
+    const changed = !prev || prev.fetchedAt !== json.fetchedAt || data !== prev;
     data = json;
-    $('#day').textContent = data.day || 'Oggi';
+    $('#day').textContent = periodLabel(data);
     if (changed) renderMain();
     renderFoot(json.warning || (json.offline ? 'Sei offline: stai vedendo l’ultimo oroscopo scaricato' : null));
     if (force) toast('Aggiornato');
   } catch (err) {
+    if (p !== period) return;
     if (!data) $('#main').innerHTML = `<div class="state">Non riesco a scaricare l'oroscopo: ${esc(err.message)}.<br>Controlla che il server sia acceso e tocca Aggiorna.</div>`;
     renderFoot(err.message);
   }
@@ -353,6 +434,7 @@ renderSettings();
 bindSettings();
 buildWheel();
 renderSigns();
+renderPeriods();
 renderMain();
 bindSwipe($('#main'));
 bindSwipe($('.wheel-wrap'));

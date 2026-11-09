@@ -1,0 +1,188 @@
+{
+  "period": "settimanale",
+  "day": "9-15 novembre",
+  "fetchedAt": "2026-11-09T20:45:45.751Z",
+  "sourceUpdated": "2026-11-07T18:22:44",
+  "signs": {
+    "pesci": {
+      "sign": "pesci",
+      "range": "20 febbraio - 20 marzo",
+      "day": "9-15 novembre",
+      "ratings": {
+        "fortuna": 4,
+        "amore": 5,
+        "soldi": 3
+      },
+      "text": "Svolta di carriera, traguardi prestigiosi e un intuito emotivo che guida ogni scelta. Il Sole e Mercurio raggiungono il punto più alto del vostro cielo astrologico, ponendovi sotto riflettori impegnativi ma estremamente gratificanti. Sarete chiamati a dimostrare il vostro valore professionale, ad assumere ruoli di maggiore responsabilità o a difendere i vostri successi di fronte a una platea esigente. Le risorse finanziarie richiedono ordine e disciplina per far fronte ad alcune spese di investimento per la professione. Venere in Scorpione vi protegge infondendovi una grazia e una dolcezza magnetica che disarmeranno qualunque avversario. In amore le giornate di mercoledì e giovedì con la Luna in Cancro saranno poetiche, magiche e capaci di regalarvi conferme sentimentali indimenticabili.",
+      "word": null,
+      "affinity": null,
+      "link": "https://onlyoroscopo.com/oroscopo-settimanale-pesci/",
+      "updated": "2026-11-07T18:22:44"
+    },
+    "acquario": {
+      "sign": "acquario",
+      "range": "21 gennaio - 19 febbraio",
+      "day": "9-15 novembre",
+      "ratings": {
+        "fortuna": 5,
+        "amore": 4,
+        "soldi": 4
+      },
+      "text": "Networking di altissimo livello, innovazione strategica e grandi visioni sul futuro. Il favoloso trigono del Sole e di Mercurio dal Sagittario riaccende la vostra natura di precursori e visionari. La settimana vi vede inseriti al centro di collaborazioni internazionali, progetti di gruppo o iniziative legate alla tecnologia e al sociale. Raccoglierete consensi entusiastici e troverete sponsor pronti a finanziare le vostre idee più audaci. Sul piano economico si aprono interessanti spiragli di guadagno legati a nuove attività. In amore la sintonia parte prima di tutto dalla mente: lunedì e martedì, con la Luna in Gemelli, l’intesa con il partner raggiungerà picchi di straordinaria leggerezza e complicità. Il weekend in Leone chiederà solo di smussare un pizzico di ostinazione.",
+      "word": null,
+      "affinity": null,
+      "link": "https://onlyoroscopo.com/oroscopo-settimanale-acquario/",
+      "updated": "2026-11-07T18:22:29"
+    },
+    "capricorno": {
+      "sign": "capricorno",
+      "range": "23 ottobre - 22 novembre",
+      "day": "9-15 novembre",
+      "ratings": {
+        "fortuna": 4,
+        "amore": 4,
+        "soldi": 5
+      },
+      "text": "Strategia silenziosa, accumulo di energie e preparazione meticolosa delle prossime mosse. I pianeti in Sagittario scivolano nella vostra dodicesima casa solare, suggerendovi una tattica di cauta attesa e pianificazione riservata. Non è il momento di sparare le cartucce migliori in pubblico: lavorate dietro le quinte, perfezionate i dettagli dei vostri dossier ed eliminate senza pietà le perdite di tempo. Le finanze sono solide e ben gestite grazie alla vostra naturale avversione per lo spreco. Venere in Scorpione vi garantisce il sostegno incondizionato di amici fidati e alleati strategici. In amore vivrete giornate di dolce intimità e riservatezza: preferirete la tranquillità delle mura domestiche e le conversazioni profonde ai clamori della vita mondana.",
+      "word": null,
+      "affinity": null,
+      "link": "https://onlyoroscopo.com/oroscopo-settimanale-capricorno/",
+      "updated": "2026-11-07T18:22:16"
+    },
+    "sagittario": {
+      "sign": "sagittario",
+      "range": "23 novembre - 21 dicembre",
+      "day": "9-15 novembre",
+      "ratings": {
+        "fortuna": 5,
+        "amore": 5,
+        "soldi": 4
+      },
+      "text": "Siete i padroni assoluti della scena: energia esplosiva, visione d’insieme e leadership! Con l’inizio ufficiale della vostra stagione astrale grazie al Sole e a Mercurio nel segno, vi riprendete con gli interessi tutto ciò che vi era stato rallentato nei mesi scorsi. Vi sentite invincibili, percorsi da un’ondata di ottimismo, vitalità e voglia di spaccare il mondo. Sul lavoro ogni porta sembra aprirsi al vostro passaggio: presentate progetti, chiedete finanziamenti o avviate nuove imprese con totale fiducia. L’unico accorgimento riguarda le finanze: la tendenza al grande gesto potrebbe portarvi a spendere più del dovuto per celebrare il vostro successo. In amore il vostro entusiasmo contagia chiunque: le coppie ritrovano la gioia dell’avventura condivisa, i single avranno l’imbarazzo della scelta.",
+      "word": null,
+      "affinity": null,
+      "link": "https://onlyoroscopo.com/oroscopo-settimanale-sagittario/",
+      "updated": "2026-11-07T18:22:02"
+    },
+    "scorpione": {
+      "sign": "scorpione",
+      "range": "23 ottobre - 22 novembre",
+      "day": "9-15 novembre",
+      "ratings": {
+        "fortuna": 4,
+        "amore": 5,
+        "soldi": 5
+      },
+      "text": "Consolidamento materiale, autorità indiscussa e un magnetismo sentimentale ipnotico. Anche se il Sole ha salutato il vostro segno per trasferirsi in Sagittario, l’attenzione si sposta ora sul versante dei guadagni e della valorizzazione personale. L’azione combinata dei pianeti vi spinge a monetizzare l’immenso lavoro svolto di recente: sono in arrivo proposte di aumento, compensi extra o trattative di vendita molto vantaggiose. Venere rimane nel vostro segno, continuando a concedervi una carica erotica e affettiva fuori dal comune. Pretendete una devozione totale e sarete pronti a darla a vostra volta. Nel fine settimana, con la Luna in Leone, attenzione solo a non cedere a inutili prove di forza o a scenate d’orgoglio sul lavoro.",
+      "word": null,
+      "affinity": null,
+      "link": "https://onlyoroscopo.com/oroscopo-settimanale-scorpione/",
+      "updated": "2026-11-07T18:21:47"
+    },
+    "bilancia": {
+      "sign": "bilancia",
+      "range": "23 settembre - 22 ottobre",
+      "day": "9-15 novembre",
+      "ratings": {
+        "fortuna": 5,
+        "amore": 4,
+        "soldi": 5
+      },
+      "text": "Dinamismo intellettuale, contatti fulminei e trattative commerciali ad alto rendimento! L’ingresso del Sole e di Mercurio in Sagittario attiva la vostra terza casa, regalandovi una settimana di straordinaria vivacità sociale e mentale. Spostamenti brevi, riunioni decisive, email risolutive e colloqui d’affari saranno all’ordine del giorno. Troverete la parola giusta al momento giusto per sbloccare trattative nate male nei mesi scorsi. Venere nel settore delle finanze vi assicura un fiuto eccellente per gli affari e per gli acquisti di valore. In amore regna un clima di rinnovata complicità e leggerezza: i primi giorni della settimana con la Luna nei Gemelli saranno particolarmente propizi per organizzare un viaggio di coppia o per fare incontri stimolanti se siete cuori solitari.",
+      "word": null,
+      "affinity": null,
+      "link": "https://onlyoroscopo.com/oroscopo-settimanale-bilancia/",
+      "updated": "2026-11-07T18:21:29"
+    },
+    "vergine": {
+      "sign": "vergine",
+      "range": "24 AGOSTO - 22 SETTEMBRE",
+      "day": "9-15 novembre",
+      "ratings": {
+        "fortuna": 3,
+        "amore": 4,
+        "soldi": 4
+      },
+      "text": "Riorganizzazione delle fondamenta domestiche, rigore contabile e protezione delle risorse. La spinta planetaria dal Sagittario accende la vostra quarta casa solare, portando in primo piano questioni legate all’abitazione, ai beni di famiglia o a una ristrutturazione degli spazi di lavoro. Potreste avvertire una leggera fatica mentale dovuta al sovrapporsi di impegni burocratici, ma la vostra mente analitica saprà mettere ogni tassello al posto giusto. Venere dallo Scorpione vi dona una capacità d’ascolto e una persuasione verbale formidabili: saprete convincere chiunque con garbo e fermezza. Sul piano finanziario la parola d’ordine è prudenza: meglio congelare gli investimenti a rischio e puntare su garanzie certe. In amore, la concretezza dei fatti supererà di gran lunga le parole astratte.",
+      "word": null,
+      "affinity": null,
+      "link": "https://onlyoroscopo.com/oroscopo-settimanale-vergine/",
+      "updated": "2026-11-07T18:21:16"
+    },
+    "leone": {
+      "sign": "leone",
+      "range": "23 LUGLIO - 23 AGOSTO",
+      "day": "9-15 novembre",
+      "ratings": {
+        "fortuna": 5,
+        "amore": 5,
+        "soldi": 4
+      },
+      "text": "Ritornate i monarchi incontrastati dello zodiaco: sfarzo, creatività e una fortuna sfacciata! Il passaggio del Sole e di Mercurio nel segno amico del Sagittario riaccende il vostro fuoco sacro. Vi lasciate alle spalle i dubbi o i rallentamenti delle ultime settimane per riprendere in mano il timone della vostra vita con un entusiasmo contagioso. Sul lavoro le vostre idee originali troveranno finalmente investitori pronti a scommetterci; le finanze registrano una ripresa incoraggiante. L’amore vivrà una fase di straordinario splendore: se Venere in Scorpione vi chiede ancora di non mostrare troppa suscettibilità in famiglia, la Luna che approda nel vostro segno durante il fine settimana scatenerà un magnetismo irresistibile, incoronandovi protagonisti assoluti della vita sociale e sentimentale.",
+      "word": null,
+      "affinity": null,
+      "link": "https://onlyoroscopo.com/oroscopo-settimanale-leone/",
+      "updated": "2026-11-07T18:21:00"
+    },
+    "cancro": {
+      "sign": "cancro",
+      "range": "22 GIUGNO - 22 LUGLIO",
+      "day": "9-15 novembre",
+      "ratings": {
+        "fortuna": 5,
+        "amore": 5,
+        "soldi": 4
+      },
+      "text": "Grande efficienza lavorativa, intuito finanziario prodigioso e un cuore pronto a proteggere chi ama. Vi attende una settimana di straordinaria produttività. L’uscita dei pianeti veloci dai settori di blocco vi restituisce un’energia fluida e organizzata: in ufficio smaltirete arretrati complessi con una facilità che sorprenderà colleghi e superiori. Il picco della settimana arriverà tra mercoledì e giovedì, quando la Luna entrerà nel vostro segno regalandovi una sensibilità quasi percettiva negli affari. Venere vi sorride dallo Scorpione, promettendo emozioni profonde, romanticismo sincero e, per i single, incontri destinati a lasciare il segno. L’unico monito riguarda la tendenza ad accollarvi le responsabilità altrui: imparate a delegare.",
+      "word": null,
+      "affinity": null,
+      "link": "https://onlyoroscopo.com/oroscopo-settimanale-cancro/",
+      "updated": "2026-11-07T18:20:46"
+    },
+    "gemelli": {
+      "sign": "gemelli",
+      "range": "21 Maggio - 21 GIUGNO",
+      "day": "9-15 novembre",
+      "ratings": {
+        "fortuna": 3,
+        "amore": 4,
+        "soldi": 3
+      },
+      "text": "Settimana di confronto costruttivo, ritmi serrati e ridefinizione degli accordi d’affari. La settimana si apre con la Luna nel vostro segno, regalandovi tra lunedì e martedì un picco di carisma, prontezza di riflessi e brillantezza comunicativa. Tuttavia, l’opposizione di Sole e Mercurio dal Sagittario vi costringe a fare i conti con la realtà dei contratti e delle partnership: non potete più rimanere sul vago. I collaboratori o i soci chiederanno impegni precisi ed esecutivi. La gestione economica richiede metodo: evitate spese dettate dall’impulso di compensare lo stress. In amore, la dialettica è la vostra arma vincente, ma attenzione a non trasformare il dialogo in un dibattito cavilloso; nel weekend ritrovate dolcezza ed intesa intima.",
+      "word": null,
+      "affinity": null,
+      "link": "https://onlyoroscopo.com/oroscopo-settimanale-gemelli/",
+      "updated": "2026-11-07T18:20:32"
+    },
+    "toro": {
+      "sign": "toro",
+      "range": "21 aprile - 20 maggio",
+      "day": "9-15 novembre",
+      "ratings": {
+        "fortuna": 4,
+        "amore": 3,
+        "soldi": 5
+      },
+      "text": "Strategia patrimoniale, fermezza nelle decisioni e un fascino magnetico che non passa inosservato. Con il diradarsi delle opposizioni dirette, la settimana vi invita a spostare il baricentro sulle questioni pratiche a lungo termine: revisione di mutui, riorganizzazione delle spese familiari e consolidamento degli asset immobiliari. Sarete lucidi e implacabili nel depurare l’agenda da collaborazioni poco redditizie. Venere, ancora opposta dallo Scorpione, continua a mettere sotto la lente d’ingrandimento i rapporti di coppia: non si tratta di crisi, ma di un’esigenza ineludibile di trasparenza. Se il partner ha tentennato, pretenderete risposte chiare. Il passaggio della Luna nel segno amico del Cancro tra mercoledì e giovedì vi regalerà intuizioni d’oro per risolvere un contenzioso burocratico.",
+      "word": null,
+      "affinity": null,
+      "link": "https://onlyoroscopo.com/oroscopo-settimanale-toro/",
+      "updated": "2026-11-07T18:20:21"
+    },
+    "ariete": {
+      "sign": "ariete",
+      "range": "21 MARZO - 19 APRILE",
+      "day": "9-15 novembre",
+      "ratings": {
+        "fortuna": 5,
+        "amore": 4,
+        "soldi": 4
+      },
+      "text": "Una spinta espansiva travolgente vi proietta verso la conquista di nuove vette! Il doppio trigono del Sole e di Mercurio dal Sagittario agisce come un carburante ad altissimo numero di ottani per la vostra mente e la vostra ambizione. Dopo settimane di gestazione e qualche esitazione burocratica, ritrovate un’incisività straordinaria: è il momento ideale per proporre progetti all’estero, chiudere contratti d’affari o iscrivervi a un corso di alta formazione. Venere in Scorpione continua a sorvegliare l’asse delle risorse finanziarie condivise: l’intuito negli investimenti è affilatissimo, ma richiede di non fare il passo più lungo della gamba. In amore, la prima parte della settimana regala un dialogo frizzante e divertente, mentre il weekend in Leone accenderà una passione vulcanica e senza freni.",
+      "word": null,
+      "affinity": null,
+      "link": "https://onlyoroscopo.com/oroscopo-settimanale-ariete/",
+      "updated": "2026-11-07T18:20:04"
+    }
+  }
+}

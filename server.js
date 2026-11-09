@@ -1,5 +1,5 @@
 // Oroscopo App — server Node senza dipendenze.
-// Scarica gli oroscopi giornalieri da onlyoroscopo.com, li salva in ./data
+// Scarica gli oroscopi (giornaliero, settimanale, mensile, annuale) da onlyoroscopo.com, li salva in ./data
 // e serve la webapp in ./public. Avvio: `node server.js` (porta 3000).
 
 const http = require('http');
@@ -9,7 +9,9 @@ const path = require('path');
 const PORT = process.env.PORT || 3000;
 const DATA_DIR = path.join(__dirname, 'data');
 const PUBLIC_DIR = path.join(__dirname, 'public');
-const SOURCE = 'https://onlyoroscopo.com/wp-json/wp/v2/posts?categories=44&per_page=20&_fields=slug,modified,link,content';
+// categorie WordPress del sito per ogni periodo
+const PERIODS = { giornaliero: 44, settimanale: 46, mensile: 45, annuale: 47 };
+const sourceUrl = cat => `https://onlyoroscopo.com/wp-json/wp/v2/posts?categories=${cat}&per_page=20&_fields=slug,modified,link,content`;
 const CHECK_EVERY_MS = 60 * 60 * 1000; // ricontrolla ogni ora
 
 const SIGNS = ['ariete', 'toro', 'gemelli', 'cancro', 'leone', 'vergine',
@@ -42,9 +44,11 @@ const after = (lines, label) => {
   return i >= 0 ? lines[i + 1] : null;
 };
 
-function parsePost(post) {
+const TABS = ['GIORNALIERO', 'SETTIMANALE', 'MENSILE', 'ANNUALE'];
+
+function parsePost(post, period) {
   const lines = toLines(post.content.rendered);
-  const sign = post.slug.replace('oroscopo-giornaliero-', '');
+  const sign = post.slug.replace(`oroscopo-${period}-`, '');
 
   const rating = name => {
     const i = lines.findIndex(l => l === name);
@@ -53,23 +57,30 @@ function parsePost(post) {
     return m ? +m[1] : null;
   };
 
-  // il testo sta tra l'ultima "Valutazione" e "Parola del giorno:"
+  // il periodo ("9-15 novembre", "Novembre", "Come sarà il 2026…") segue le linguette di navigazione
+  const lastTab = lines.slice(0, 12).reduce((acc, l, i) => (TABS.includes(l) ? i : acc), -1);
+  let label = lastTab >= 0 ? lines[lastTab + 1] : null;
+  if (period === 'annuale') label = (label || '').match(/\b20\d\d\b/)?.[0] || label;
+
+  // il testo sta dopo l'ultima "Valutazione" (o dopo il periodo) e finisce a "Parola del giorno" / "Cambia Segno"
   const lastVal = lines.reduce((acc, l, i) => (/^Valutazione \d su 5$/.test(l) ? i : acc), -1);
+  const start = lastVal >= 0 ? lastVal + 1 : lastTab + 2;
+  const endIdx = lines.findIndex((l, i) => i >= start && (l.startsWith('Parola del giorno') || l === 'Cambia Segno'));
   const wordIdx = lines.findIndex(l => l.startsWith('Parola del giorno'));
-  const body = lines.slice(lastVal + 1, wordIdx > 0 ? wordIdx : undefined)
+  const body = lines.slice(start, endIdx > 0 ? endIdx : undefined)
     .filter(l => l.length > 40).join('\n\n');
 
-  const dateLine = lines.find(l => /^(Lunedì|Martedì|Mercoledì|Giovedì|Venerdì|Sabato|Domenica)\s+\d{1,2}\s+\w+/i.test(l));
-  const titleIdx = lines.findIndex(l => l.toLowerCase().startsWith('oroscopo giornaliero'));
+  if (period === 'giornaliero') label =lines.find(l => /^(Lunedì|Martedì|Mercoledì|Giovedì|Venerdì|Sabato|Domenica)\s+\d{1,2}\s+\w+/i.test(l));
+  const titleIdx = lines.findIndex(l => l.toLowerCase().startsWith(`oroscopo ${period}`));
 
   return {
     sign,
     range: titleIdx >= 0 ? lines[titleIdx + 1] : null,
-    day: dateLine || null,
+    day: label || null,
     ratings: { fortuna: rating('Fortuna'), amore: rating('Amore'), soldi: rating('Soldi') },
     text: body,
     word: wordIdx >= 0 ? lines[wordIdx + 1] : null,
-    affinity: {
+    affinity: period !== 'giornaliero' ? null : {
       amore: (after(lines, 'In amore') || '').toLowerCase() || null,
       amicizia: (after(lines, 'In amicizia') || '').toLowerCase() || null,
       lavoro: (after(lines, 'A lavoro') || '').toLowerCase() || null,
@@ -80,45 +91,50 @@ function parsePost(post) {
 }
 
 // ---------- fetch + cache ----------
-const LATEST = path.join(DATA_DIR, 'latest.json');
-let cache = fs.existsSync(LATEST) ? JSON.parse(fs.readFileSync(LATEST, 'utf8')) : null;
-let inflight = null;
+// il giornaliero resta in latest.json (compatibile con la versione precedente)
+const latestFile = p => path.join(DATA_DIR, p === 'giornaliero' ? 'latest.json' : `${p}-latest.json`);
+const readJson = f => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch { return null; } };
+const cache = Object.fromEntries(Object.keys(PERIODS).map(p => [p, readJson(latestFile(p))]));
+const inflight = {};
 
-async function refresh() {
-  if (inflight) return inflight;
-  inflight = (async () => {
-    const res = await fetch(SOURCE, { headers: { 'User-Agent': 'OroscopoApp/1.0 (uso personale)' } });
+function refresh(period) {
+  if (inflight[period]) return inflight[period];
+  inflight[period] = (async () => {
+    const res = await fetch(sourceUrl(PERIODS[period]), { headers: { 'User-Agent': 'OroscopoApp/1.0 (uso personale)' } });
     if (!res.ok) throw new Error(`onlyoroscopo ha risposto ${res.status}`);
     const posts = await res.json();
     const signs = {};
     for (const p of posts) {
-      const s = parsePost(p);
+      if (!p.slug.startsWith(`oroscopo-${period}-`)) continue;
+      const s = parsePost(p, period);
       if (SIGNS.includes(s.sign)) signs[s.sign] = s;
     }
     if (Object.keys(signs).length === 0) throw new Error('nessun oroscopo trovato nella risposta');
     const latestModified = Object.values(signs).map(s => s.updated).sort().pop();
-    const data = {
-      day: signs.ariete?.day || Object.values(signs)[0].day,
-      fetchedAt: new Date().toISOString(),
-      sourceUpdated: latestModified,
-      signs,
-    };
-    fs.writeFileSync(LATEST, JSON.stringify(data, null, 2));
+    // etichetta più frequente tra i segni (un segno può essere rimasto al periodo prima)
+    const counts = {};
+    for (const s of Object.values(signs)) if (s.day) counts[s.day] = (counts[s.day] || 0) + 1;
+    const day = Object.entries(counts).sort((x, y) => y[1] - x[1])[0]?.[0] || null;
+    const data = { period, day, fetchedAt: new Date().toISOString(), sourceUpdated: latestModified, signs };
+    fs.writeFileSync(latestFile(period), JSON.stringify(data, null, 2));
     // archivio: un file per giorno di pubblicazione
-    fs.writeFileSync(path.join(DATA_DIR, `${latestModified.slice(0, 10)}.json`), JSON.stringify(data, null, 2));
-    cache = data;
-    console.log(`[${new Date().toLocaleString('it-IT')}] aggiornato: ${data.day} (${Object.keys(signs).length} segni)`);
+    const prefix = period === 'giornaliero' ? '' : `${period}-`;
+    fs.writeFileSync(path.join(DATA_DIR, `${prefix}${latestModified.slice(0, 10)}.json`), JSON.stringify(data, null, 2));
+    cache[period] = data;
+    console.log(`[${new Date().toLocaleString('it-IT')}] aggiornato ${period}: ${data.day} (${Object.keys(signs).length} segni)`);
     return data;
-  })().finally(() => { inflight = null; });
-  return inflight;
+  })().finally(() => { inflight[period] = null; });
+  return inflight[period];
 }
 
-function safeRefresh() {
-  return refresh().catch(err => console.error(`[${new Date().toLocaleString('it-IT')}] errore aggiornamento:`, err.message));
+function safeRefreshAll() {
+  for (const p of Object.keys(PERIODS)) {
+    refresh(p).catch(err => console.error(`[${new Date().toLocaleString('it-IT')}] errore aggiornamento ${p}:`, err.message));
+  }
 }
 
-safeRefresh();
-setInterval(safeRefresh, CHECK_EVERY_MS);
+safeRefreshAll();
+setInterval(safeRefreshAll, CHECK_EVERY_MS);
 
 // ---------- http ----------
 const MIME = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8',
@@ -134,13 +150,16 @@ http.createServer(async (req, res) => {
   const url = new URL(req.url, 'http://x');
 
   if (url.pathname === '/api/oroscopo') {
+    const period = url.searchParams.get('period') || 'giornaliero';
+    if (!PERIODS[period]) return sendJson(res, 400, { error: `periodo sconosciuto: ${period}` });
     try {
       const force = url.searchParams.has('refresh');
-      const stale = !cache || Date.now() - new Date(cache.fetchedAt) > CHECK_EVERY_MS;
-      if (force || stale) await refresh();
-      return sendJson(res, 200, cache);
+      const c = cache[period];
+      const stale = !c || Date.now() - new Date(c.fetchedAt) > CHECK_EVERY_MS;
+      if (force || stale) await refresh(period);
+      return sendJson(res, 200, { ...cache[period], period });
     } catch (err) {
-      if (cache) return sendJson(res, 200, { ...cache, warning: err.message });
+      if (cache[period]) return sendJson(res, 200, { ...cache[period], period, warning: err.message });
       return sendJson(res, 502, { error: err.message });
     }
   }

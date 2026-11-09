@@ -1,5 +1,5 @@
 // Service worker: app shell in cache, dati "network first" con fallback offline.
-const VERSION = 'oroscopo-v3';
+const VERSION = 'oroscopo-v5';
 const SHELL = ['/', '/index.html', '/theme.css', '/app.css', '/app.js', '/manifest.webmanifest',
   '/icon.svg', '/icon-192.png', '/icon-512.png', '/icon-maskable-512.png', '/apple-touch-icon.png'];
 
@@ -22,12 +22,14 @@ self.addEventListener('fetch', e => {
   if (url.pathname === '/api/oroscopo') {
     e.respondWith((async () => {
       const cache = await caches.open(VERSION);
+      // una copia per periodo, senza il parametro refresh
+      const key = `/api/oroscopo?period=${url.searchParams.get("period") || "giornaliero"}`;
       try {
         const res = await fetch(e.request);
-        if (res.ok) cache.put('/api/oroscopo', res.clone());
+        if (res.ok) cache.put(key, res.clone());
         return res;
       } catch {
-        const hit = await cache.match('/api/oroscopo');
+        const hit = await cache.match(key);
         if (!hit) throw new Error('offline');
         const json = await hit.json();
         return new Response(JSON.stringify({ ...json, offline: true }), { headers: { 'Content-Type': 'application/json' } });

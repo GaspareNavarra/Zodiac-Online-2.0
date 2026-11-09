@@ -1,6 +1,6 @@
 # Oroscopo App
 
-PWA mobile che mostra l'oroscopo giornaliero di onlyoroscopo.com con una grafica che puoi personalizzare.
+PWA mobile che mostra l'oroscopo giornaliero, settimanale, mensile e annuale di onlyoroscopo.com con una grafica che puoi personalizzare.
 
 ## Avvio
 
@@ -12,9 +12,9 @@ Apri http://localhost:3000. Serve solo Node 18 o più recente, senza dipendenze.
 
 ## Come funziona
 
-- `server.js` legge i 12 oroscopi dall'API WordPress del sito (`/wp-json/wp/v2/posts?categories=44`), li riformatta (valutazioni, testo, parola del giorno, affinità) e li salva in `data/` (`latest.json` più un archivio con un file al giorno).
+- `server.js` legge gli oroscopi dei 12 segni dall'API WordPress del sito (categorie 44 giornaliero, 46 settimanale, 45 mensile, 47 annuale), li riformatta (valutazioni, testo, parola del giorno, affinità) e li salva in `data/` (`latest.json` per il giornaliero, `settimanale-latest.json` ecc. per gli altri, più un archivio).
 - Ricontrolla il sito ogni ora. Il sito pubblica l'oroscopo del giorno dopo verso le 19.
-- La webapp chiama `/api/oroscopo`. Il service worker tiene in cache l'ultima versione, così l'app si legge anche offline.
+- La webapp chiama `/api/oroscopo?period=giornaliero|settimanale|mensile|annuale` (senza parametro: giornaliero). Il service worker tiene in cache l'ultima versione, così l'app si legge anche offline.
 
 ## Personalizzare la grafica
 
