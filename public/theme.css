@@ -1,0 +1,25 @@
+/* =========================================================
+   TEMA — modifica liberamente questi valori.
+   Sono i valori di partenza: quello che scegli dal pannello
+   "Personalizza" nell'app li sovrascrive (salvato nel browser).
+   ========================================================= */
+:root {
+  /* Colori */
+  --bg: #13102a;            /* sfondo pagina */
+  --surface: #1e1a3c;       /* blocchi */
+  --text: #f4f0ff;          /* testo principale */
+  --muted: #a29bc9;         /* testo secondario */
+  --accent: #f2d27a;        /* accento (anelli, ruota, evidenze) */
+
+  /* Tipografia */
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --text-scale: 1;          /* 0.85 – 1.25 */
+
+  /* Forme */
+  --radius: 22px;           /* arrotondamento blocchi */
+  --gap: 10px;              /* spazio tra i blocchi */
+
+  /* Effetti */
+  --stars-opacity: 1;       /* sfondo stellato: 0 = spento */
+}

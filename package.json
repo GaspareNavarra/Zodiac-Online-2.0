@@ -1,0 +1,11 @@
+{
+  "name": "oroscopo-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Oroscopo giornaliero da onlyoroscopo.com in una PWA mobile personalizzabile",
+  "scripts": {
+    "start": "node server.js",
+    "icons": "node tools/make-icons.js"
+  },
+  "engines": { "node": ">=18" }
+}

@@ -1,0 +1,368 @@
+// ---------- dati statici ----------
+const SIGNS = [
+  { id: 'ariete', name: 'Ariete', g: '♈', el: 'Fuoco', pl: 'Marte' },
+  { id: 'toro', name: 'Toro', g: '♉', el: 'Terra', pl: 'Venere' },
+  { id: 'gemelli', name: 'Gemelli', g: '♊', el: 'Aria', pl: 'Mercurio' },
+  { id: 'cancro', name: 'Cancro', g: '♋', el: 'Acqua', pl: 'Luna' },
+  { id: 'leone', name: 'Leone', g: '♌', el: 'Fuoco', pl: 'Sole' },
+  { id: 'vergine', name: 'Vergine', g: '♍', el: 'Terra', pl: 'Mercurio' },
+  { id: 'bilancia', name: 'Bilancia', g: '♎', el: 'Aria', pl: 'Venere' },
+  { id: 'scorpione', name: 'Scorpione', g: '♏', el: 'Acqua', pl: 'Plutone' },
+  { id: 'sagittario', name: 'Sagittario', g: '♐', el: 'Fuoco', pl: 'Giove' },
+  { id: 'capricorno', name: 'Capricorno', g: '♑', el: 'Terra', pl: 'Saturno' },
+  { id: 'acquario', name: 'Acquario', g: '♒', el: 'Aria', pl: 'Urano' },
+  { id: 'pesci', name: 'Pesci', g: '♓', el: 'Acqua', pl: 'Nettuno' },
+];
+const ELEMENT_COLORS = { Fuoco: '#ff8a5c', Terra: '#9fd17f', Aria: '#8fd3ff', Acqua: '#7f9cff' };
+const VS = '︎'; // forza i glifi come testo (niente emoji colorate)
+const byId = Object.fromEntries(SIGNS.map(s => [s.id, s]));
+
+const PRESETS = {
+  notte:   { name: 'Notte',   bg: '#13102a', surface: '#1e1a3c', text: '#f4f0ff', muted: '#a29bc9', accent: '#f2d27a', stars: 1 },
+  aurora:  { name: 'Aurora',  bg: '#0b1a1e', surface: '#13292e', text: '#e9fbf7', muted: '#8fb7b0', accent: '#7ee0c3', stars: 0.8 },
+  rosa:    { name: 'Rosa',    bg: '#fff4f1', surface: '#ffffff', text: '#3a1f2b', muted: '#9a7482', accent: '#d9577f', stars: 0 },
+  lavanda: { name: 'Lavanda', bg: '#efeaff', surface: '#ffffff', text: '#241a45', muted: '#7d72a6', accent: '#6b4fd8', stars: 0 },
+  tramonto:{ name: 'Tramonto',bg: '#24131a', surface: '#341c26', text: '#fff0e6', muted: '#c79c95', accent: '#ff8a5c', stars: 0.6 },
+  mono:    { name: 'Mono',    bg: '#000000', surface: '#161616', text: '#f2f2f2', muted: '#8c8c8c', accent: '#ffffff', stars: 0 },
+};
+
+const FONTS = {
+  classico: { name: 'Classico', display: "'Fraunces', Georgia, serif", body: "'Inter', system-ui, sans-serif" },
+  elegante: { name: 'Elegante', display: "'Playfair Display', Georgia, serif", body: "'DM Sans', system-ui, sans-serif" },
+  mistico:  { name: 'Mistico',  display: "'Cormorant Garamond', Georgia, serif", body: "'Cormorant Garamond', Georgia, serif" },
+  moderno:  { name: 'Moderno',  display: "'Space Grotesk', system-ui, sans-serif", body: "'DM Sans', system-ui, sans-serif" },
+  sistema:  { name: 'Sistema',  display: "system-ui, -apple-system, 'Segoe UI', sans-serif", body: "system-ui, -apple-system, 'Segoe UI', sans-serif" },
+};
+
+const COLOR_FIELDS = [['bg', 'Sfondo'], ['surface', 'Blocchi'], ['text', 'Testo'], ['muted', 'Secondario'], ['accent', 'Accento']];
+const RATING_STYLES = [['ring', 'Anelli'], ['stars', 'Stelle'], ['dots', 'Pallini'], ['bar', 'Barra']];
+const MOODS = ['', 'Difficile', 'Impegnativa', 'Discreta', 'Buona', 'Ottima'];
+
+const DEFAULTS = { preset: 'notte', ...PRESETS.notte, font: 'classico', rating: 'ring', scale: 1, radius: 22 };
+
+// ---------- storage sicuro ----------
+const store = {
+  get(k, fb) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : fb; } catch { return fb; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+};
+
+let theme = { ...DEFAULTS, ...store.get('oroscopo.theme', {}) };
+let current = store.get('oroscopo.sign', 'ariete');
+let data = null;
+let wheelAngle = null;
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+// ---------- tema ----------
+function applyTheme() {
+  const r = document.documentElement.style;
+  for (const [k] of COLOR_FIELDS) r.setProperty(`--${k}`, theme[k]);
+  r.setProperty('--stars-opacity', theme.stars);
+  r.setProperty('--text-scale', theme.scale);
+  r.setProperty('--radius', theme.radius + 'px');
+  const f = FONTS[theme.font] || FONTS.classico;
+  r.setProperty('--font-display', f.display);
+  r.setProperty('--font-body', f.body);
+  document.querySelector('meta[name=theme-color]').content = theme.bg;
+  store.set('oroscopo.theme', theme);
+}
+
+function setTheme(patch, rerender = false) {
+  theme = { ...theme, ...patch };
+  applyTheme();
+  renderSettings();
+  if (rerender) renderMain();
+}
+
+function renderSettings() {
+  $('#presets').innerHTML = Object.entries(PRESETS).map(([id, p]) => `
+    <button class="preset" data-preset="${id}" aria-pressed="${theme.preset === id}">
+      <span class="sw" style="background:${p.bg}">
+        <i style="background:${p.surface}"></i><i style="background:${p.accent}"></i><i style="background:${p.text}"></i>
+      </span>
+      <span class="nm">${p.name}</span>
+    </button>`).join('');
+
+  $('#colors').innerHTML = COLOR_FIELDS.map(([k, label]) => `
+    <label><input type="color" data-color="${k}" value="${theme[k]}"><span>${label}</span></label>`).join('');
+
+  $('#fonts').innerHTML = Object.entries(FONTS).map(([id, f]) => `
+    <button data-font="${id}" aria-pressed="${theme.font === id}">
+      <span class="a" style="font-family:${f.display}">${f.name}, Leone</span>
+      <span class="b" style="font-family:${f.body}">Una giornata piena di energia</span>
+    </button>`).join('');
+
+  $('#ratingStyle').innerHTML = RATING_STYLES.map(([id, label]) =>
+    `<button data-rating="${id}" aria-pressed="${theme.rating === id}">${label}</button>`).join('');
+
+  $('#textScale').value = theme.scale;
+  $('#radius').value = theme.radius;
+  $('#stars').value = theme.stars;
+}
+
+function bindSettings() {
+  const sheet = $('#sheet'), scrim = $('#scrim');
+  const open = () => { scrim.hidden = false; sheet.classList.add('open'); sheet.setAttribute('aria-hidden', 'false'); };
+  const close = () => { scrim.hidden = true; sheet.classList.remove('open'); sheet.setAttribute('aria-hidden', 'true'); };
+  $('#openSettings').onclick = open;
+  $('#closeSettings').onclick = close;
+  scrim.onclick = close;
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+
+  sheet.addEventListener('click', e => {
+    const b = e.target.closest('button');
+    if (!b) return;
+    if (b.dataset.preset) { const { name, ...p } = PRESETS[b.dataset.preset]; setTheme({ preset: b.dataset.preset, ...p }); }
+    if (b.dataset.font) setTheme({ font: b.dataset.font });
+    if (b.dataset.rating) setTheme({ rating: b.dataset.rating }, true);
+  });
+  sheet.addEventListener('input', e => {
+    const t = e.target;
+    if (t.dataset.color) { theme = { ...theme, [t.dataset.color]: t.value, preset: null }; applyTheme(); }
+    if (t.id === 'textScale') { theme.scale = +t.value; applyTheme(); }
+    if (t.id === 'radius') { theme.radius = +t.value; applyTheme(); }
+    if (t.id === 'stars') { theme.stars = +t.value; applyTheme(); }
+  });
+  sheet.addEventListener('change', e => { if (e.target.dataset.color) renderSettings(); });
+
+  $('#resetTheme').onclick = () => { theme = { ...DEFAULTS }; applyTheme(); renderSettings(); renderMain(); toast('Tema ripristinato'); };
+  $('#exportTheme').onclick = async () => {
+    const json = JSON.stringify(theme);
+    try { await navigator.clipboard.writeText(json); toast('Tema copiato'); }
+    catch { prompt('Copia questo tema:', json); }
+  };
+  $('#importTheme').onclick = async () => {
+    let txt = null;
+    try { txt = await navigator.clipboard.readText(); } catch {}
+    if (!txt || !txt.trim().startsWith('{')) txt = prompt('Incolla qui il tema copiato:');
+    if (!txt) return;
+    try { setTheme({ ...JSON.parse(txt) }, true); toast('Tema incollato'); }
+    catch { toast('Il testo incollato non è un tema valido'); }
+  };
+}
+
+// ---------- ruota zodiacale ----------
+function buildWheel() {
+  const R = 128;
+  let svg = `<circle class="ring outer" r="150"/><circle class="ring" r="106"/>`;
+  for (let i = 0; i < 12; i++) {
+    const a = (i * 30 - 90 + 15) * Math.PI / 180; // separatori tra i segni
+    svg += `<line class="tick" x1="${Math.cos(a) * 108}" y1="${Math.sin(a) * 108}" x2="${Math.cos(a) * 148}" y2="${Math.sin(a) * 148}"/>`;
+  }
+  SIGNS.forEach((s, i) => {
+    const a = (i * 30 - 90) * Math.PI / 180;
+    const x = (Math.cos(a) * R).toFixed(1), y = (Math.sin(a) * R).toFixed(1);
+    svg += `<text class="gl" data-sign="${s.id}" x="${x}" y="${y}" transform="rotate(${i * 30} ${x} ${y})">${s.g}${VS}<title>${s.name}</title></text>`;
+  });
+  const wheel = $('#wheel');
+  wheel.innerHTML = svg;
+  wheel.addEventListener('click', e => { const t = e.target.closest('[data-sign]'); if (t) select(t.dataset.sign); });
+}
+
+function turnWheel(id) {
+  const target = -SIGNS.findIndex(s => s.id === id) * 30;
+  if (wheelAngle === null) wheelAngle = target + 90; // primo avvio: piccolo giro d'entrata
+  // percorso più breve verso il segno scelto
+  let delta = ((target - wheelAngle) % 360 + 540) % 360 - 180;
+  wheelAngle += delta;
+  const wheel = $('#wheel');
+  requestAnimationFrame(() => { wheel.style.transform = `rotate(${wheelAngle}deg)`; });
+  wheel.querySelectorAll('.gl').forEach(g => g.classList.toggle('on', g.dataset.sign === id));
+}
+
+// ---------- rendering ----------
+function marks(n) {
+  if (theme.rating === 'bar') return `<div class="marks bar"><i style="width:${(n / 5) * 100}%"></i></div>`;
+  const cls = theme.rating === 'dots' ? 'dots' : 'stars';
+  const one = on => cls === 'dots' ? `<span class="${on ? '' : 'off'}"></span>` : `<span class="${on ? '' : 'off'}">★</span>`;
+  return `<div class="marks ${cls}">${[1, 2, 3, 4, 5].map(i => one(i <= n)).join('')}</div>`;
+}
+
+function rateTile(label, v, i) {
+  if (theme.rating === 'ring') {
+    const r = 32, c = 2 * Math.PI * r;
+    return `<div class="tile third rate" style="--i:${i}">
+      <div class="gauge" style="--c:${c.toFixed(1)};--i:${i}">
+        <svg viewBox="0 0 74 74"><circle class="track" cx="37" cy="37" r="${r}"/>
+          <circle class="fill" cx="37" cy="37" r="${r}" style="stroke-dashoffset:${(c * (1 - v / 5)).toFixed(1)}"/></svg>
+        <b>${v}<small>/5</small></b>
+      </div>
+      <p class="label">${label}</p>
+    </div>`;
+  }
+  return `<div class="tile third rate" style="--i:${i}">
+    <p class="num">${v}<small>/5</small></p>${marks(v)}<p class="label">${label}</p>
+  </div>`;
+}
+
+function prettyRange(r) {
+  if (!r) return '';
+  return r.toLowerCase().replace(/\s*-\s*/, ' – ');
+}
+
+function splitLead(text) {
+  const t = String(text || '').replace(/\n+/g, ' ').trim();
+  const m = t.match(/^(.+?[.!?])\s+(.+)$/s);
+  return m ? [m[1], m[2]] : [t, ''];
+}
+
+function renderHero(s, h) {
+  document.documentElement.style.setProperty('--el', ELEMENT_COLORS[s.el]);
+  const title = $('.title');
+  $('#signName').textContent = s.name;
+  $('#signRange').textContent = prettyRange(h?.range);
+  title.classList.remove('swap'); void title.offsetWidth; title.classList.add('swap');
+  $('#facts').innerHTML = `
+    <span class="fact"><i class="dot"></i>${s.el}</span>
+    <span class="fact"><span class="k">pianeta</span> ${s.pl}</span>`;
+  turnWheel(s.id);
+}
+
+function renderMain(dir) {
+  const main = $('#main');
+  const s = byId[current];
+  if (!data) { renderHero(s, null); return; }
+  const h = data.signs[current];
+  renderHero(s, h);
+  if (!h) { main.innerHTML = `<div class="state">L'oroscopo di ${esc(s.name)} oggi non è ancora uscito. Riprova più tardi.</div>`; return; }
+
+  const r = h.ratings || {};
+  const rows = [['Fortuna', r.fortuna], ['Amore', r.amore], ['Soldi', r.soldi]].filter(([, v]) => v != null);
+  const avg = rows.length ? rows.reduce((a, [, v]) => a + v, 0) / rows.length : null;
+  const mood = avg ? Math.round(avg) : null;
+  const [lead, rest] = splitLead(h.text);
+  const affLabels = [['amore', 'in amore'], ['amicizia', 'in amicizia'], ['lavoro', 'al lavoro']];
+  let i = 0;
+
+  main.innerHTML = `
+    <div class="grid in">
+      ${rows.map(([l, v]) => rateTile(l, v, i++)).join('')}
+
+      ${mood ? `<div class="tile half mood" style="--i:${i++}">
+        <p class="label">La giornata</p>
+        <div>
+          <p class="big">${MOODS[mood]}</p>
+          <p class="sub">media ${avg.toFixed(1).replace('.', ',')} su 5</p>
+          <div class="meter">${[1, 2, 3, 4, 5].map(n => `<i class="${n <= mood ? 'on' : ''}"></i>`).join('')}</div>
+        </div>
+      </div>` : ''}
+
+      ${h.word ? `<div class="tile ${mood ? 'half' : ''} word" style="--i:${i++}">
+        <p class="label">Parola del giorno</p>
+        <p class="big">${esc(h.word)}</p>
+      </div>` : ''}
+
+      <article class="tile reading" style="--i:${i++}">
+        <p class="lead">${esc(lead)}</p>
+        ${rest ? `<p class="rest">${esc(rest)}</p>` : ''}
+      </article>
+
+      <div class="tile" style="--i:${i++}">
+        <div class="aff-head"><h2>Con chi va meglio oggi</h2></div>
+        <div class="aff">
+          ${affLabels.map(([k, l]) => {
+            const a = byId[h.affinity?.[k]];
+            return a ? `<button data-sign="${a.id}"><span class="g">${a.g}${VS}</span><span class="s">${a.name}</span><span class="t">${l}</span></button>` : '';
+          }).join('')}
+        </div>
+      </div>
+    </div>`;
+
+  main.querySelector('.aff').onclick = e => { const b = e.target.closest('[data-sign]'); if (b) select(b.dataset.sign); };
+
+  main.classList.remove('enter', 'enter-l');
+  if (dir) { void main.offsetWidth; main.classList.add(dir < 0 ? 'enter-l' : 'enter'); }
+}
+
+function renderSigns() {
+  $('#signs').innerHTML = SIGNS.map(s => `
+    <button class="chip" data-sign="${s.id}" aria-current="${s.id === current}">
+      <span class="g">${s.g}${VS}</span><span class="n">${s.name}</span>
+    </button>`).join('');
+  $('#signs').onclick = e => { const b = e.target.closest('[data-sign]'); if (b) select(b.dataset.sign); };
+}
+
+function renderFoot(warning) {
+  const t = data?.fetchedAt ? new Date(data.fetchedAt).toLocaleString('it-IT', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '–';
+  $('#foot').innerHTML = `
+    ${warning ? `<p>⚠︎ ${esc(warning)}</p>` : ''}
+    <p>Testi di <a href="https://onlyoroscopo.com/" target="_blank" rel="noopener">onlyoroscopo.com</a>, scaricati il ${t}</p>
+    <button id="refresh">Aggiorna</button>`;
+  $('#refresh').onclick = () => load(true);
+}
+
+function select(id, dir) {
+  if (!byId[id]) return;
+  if (dir === undefined) {
+    const a = SIGNS.findIndex(s => s.id === current), b = SIGNS.findIndex(s => s.id === id);
+    dir = b === a ? 0 : b > a ? 1 : -1;
+  }
+  current = id;
+  store.set('oroscopo.sign', id);
+  document.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-current', c.dataset.sign === id));
+  document.querySelector(`.chip[data-sign="${id}"]`)?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+  renderMain(dir);
+  if (window.scrollY > 200) window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// swipe orizzontale tra i segni (sul contenuto e sulla ruota)
+function bindSwipe(el) {
+  let x0 = null, y0 = null;
+  el.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }, { passive: true });
+  el.addEventListener('touchend', e => {
+    if (x0 === null) return;
+    const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0;
+    x0 = null;
+    if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+    const i = SIGNS.findIndex(s => s.id === current);
+    const next = SIGNS[(i + (dx < 0 ? 1 : -1) + SIGNS.length) % SIGNS.length];
+    select(next.id, dx < 0 ? 1 : -1);
+  });
+}
+
+// ---------- dati ----------
+async function load(force = false) {
+  if (force) toast('Aggiorno…');
+  try {
+    const res = await fetch('/api/oroscopo' + (force ? '?refresh' : ''), { cache: 'no-store' });
+    const json = await res.json();
+    if (!res.ok) throw new Error(json.error || `il server ha risposto ${res.status}`);
+    const changed = !data || data.fetchedAt !== json.fetchedAt;
+    data = json;
+    $('#day').textContent = data.day || 'Oggi';
+    if (changed) renderMain();
+    renderFoot(json.warning || (json.offline ? 'Sei offline: stai vedendo l’ultimo oroscopo scaricato' : null));
+    if (force) toast('Aggiornato');
+  } catch (err) {
+    if (!data) $('#main').innerHTML = `<div class="state">Non riesco a scaricare l'oroscopo: ${esc(err.message)}.<br>Controlla che il server sia acceso e tocca Aggiorna.</div>`;
+    renderFoot(err.message);
+  }
+}
+
+let toastTimer;
+function toast(msg) {
+  const t = $('#toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+// ---------- avvio ----------
+applyTheme();
+renderSettings();
+bindSettings();
+buildWheel();
+renderSigns();
+renderMain();
+bindSwipe($('#main'));
+bindSwipe($('.wheel-wrap'));
+load();
+requestAnimationFrame(() => document.querySelector(`.chip[data-sign="${current}"]`)?.scrollIntoView({ inline: 'center', block: 'nearest' }));
+
+// ricarica quando l'app torna in primo piano (es. il mattino dopo)
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') load(); });
+
+// PWA
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
+}
