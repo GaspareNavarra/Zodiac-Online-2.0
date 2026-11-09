@@ -281,12 +281,16 @@ main { touch-action: pan-y; }
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 11;
   max-width: 460px; margin: 0 auto; max-height: 86dvh; overflow-y: auto;
   background: var(--surface); color: var(--text);
-  border-radius: 26px 26px 0 0; padding: 8px 20px max(24px, env(safe-area-inset-bottom));
+  border-radius: 26px 26px 0 0; padding: 14px 20px max(24px, env(safe-area-inset-bottom));
   transform: translateY(105%); transition: transform .4s var(--ease);
   box-shadow: 0 -10px 40px rgb(0 0 0 / .3);
+  overscroll-behavior: contain;
 }
-.sheet.open { transform: none; }
-.sheet-handle { width: 40px; height: 4px; border-radius: 4px; background: var(--muted); opacity: .4; margin: 4px auto 8px; }
+/* --drag: quanto il pannello è trascinato verso il basso */
+.sheet.open { transform: translateY(var(--drag, 0px)); }
+.sheet.dragging { transition: none; }
+.scrim { opacity: calc(1 - var(--drag-p, 0)); }
+.sheet-handle { width: 40px; height: 5px; border-radius: 5px; background: var(--muted); opacity: .4; margin: 0 auto 18px; }
 .sheet-head { display: flex; justify-content: space-between; align-items: center; }
 .sheet-head h2 { margin: 0; font-family: var(--font-display); font-size: 1.4em; font-weight: 500; }
 .opt { padding: 16px 0; border-top: 1px solid var(--line); }

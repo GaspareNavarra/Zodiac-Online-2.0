@@ -126,10 +126,50 @@ function renderSettings() {
 function bindSettings() {
   const sheet = $('#sheet'), scrim = $('#scrim');
   const open = () => { scrim.hidden = false; sheet.classList.add('open'); sheet.setAttribute('aria-hidden', 'false'); };
-  const close = () => { scrim.hidden = true; sheet.classList.remove('open'); sheet.setAttribute('aria-hidden', 'true'); };
+  const close = () => {
+    scrim.hidden = true; sheet.classList.remove('open', 'dragging'); sheet.setAttribute('aria-hidden', 'true');
+    // il pannello scende dalla posizione in cui è stato lasciato
+    requestAnimationFrame(() => { sheet.style.removeProperty('--drag'); scrim.style.removeProperty('--drag-p'); });
+  };
   $('#openSettings').onclick = open;
-  $('#closeSettings').onclick = close;
   scrim.onclick = close;
+
+  // trascina verso il basso per chiudere: dalla maniglia/titolo, o dal contenuto se è già in cima
+  let y0 = null, x0 = 0, t0 = 0, dy = 0, dragging = false;
+  sheet.addEventListener('touchstart', e => {
+    if (e.touches.length > 1 || e.target.closest('input[type=range]')) return;
+    const fromTop = e.target.closest('.sheet-handle, .sheet-head');
+    if (!fromTop && sheet.scrollTop > 0) return;
+    y0 = e.touches[0].clientY; x0 = e.touches[0].clientX; t0 = Date.now(); dy = 0; dragging = false;
+  }, { passive: true });
+  sheet.addEventListener('touchmove', e => {
+    if (y0 === null) return;
+    dy = e.touches[0].clientY - y0;
+    const dx = e.touches[0].clientX - x0;
+    if (!dragging) {
+      if (Math.abs(dy) < 6 && Math.abs(dx) < 6) return;
+      if (dy <= 0 || Math.abs(dx) > dy || sheet.scrollTop > 0) { y0 = null; return; } // scorrimento normale
+      dragging = true;
+      sheet.classList.add('dragging');
+    }
+    e.preventDefault();
+    const d = Math.max(0, dy);
+    sheet.style.setProperty('--drag', `${d}px`);
+    scrim.style.setProperty('--drag-p', Math.min(d / sheet.offsetHeight, 1).toFixed(3));
+  }, { passive: false });
+  const endDrag = () => {
+    if (y0 === null) return;
+    y0 = null;
+    if (!dragging) return;
+    dragging = false;
+    const fast = dy / Math.max(Date.now() - t0, 1) > .5; // gesto rapido verso il basso
+    if (dy > Math.min(140, sheet.offsetHeight * .3) || fast) return close();
+    sheet.classList.remove('dragging'); // torna su con la sua transizione
+    sheet.style.removeProperty('--drag');
+    scrim.style.removeProperty('--drag-p');
+  };
+  sheet.addEventListener('touchend', endDrag);
+  sheet.addEventListener('touchcancel', endDrag);
   document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
 
   sheet.addEventListener('click', e => {
