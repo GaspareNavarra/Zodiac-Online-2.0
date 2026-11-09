@@ -191,7 +191,7 @@ function turnWheel(id) {
   let delta = ((target - wheelAngle) % 360 + 540) % 360 - 180;
   wheelAngle += delta;
   const wheel = $('#wheel');
-  requestAnimationFrame(() => { wheel.style.transform = `rotate(${wheelAngle}deg)`; });
+  requestAnimationFrame(() => { wheel.style.setProperty('--a', `${wheelAngle}deg`); });
   wheel.querySelectorAll('.gl').forEach(g => g.classList.toggle('on', g.dataset.sign === id));
 }
 
@@ -360,12 +360,71 @@ function setPeriod(id) {
 }
 
 function renderFoot(warning) {
-  const t = data?.fetchedAt ? new Date(data.fetchedAt).toLocaleString('it-IT', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '–';
   $('#foot').innerHTML = `
     ${warning ? `<p>⚠︎ ${esc(warning)}</p>` : ''}
-    <p>Testi di <a href="https://onlyoroscopo.com/" target="_blank" rel="noopener">onlyoroscopo.com</a>, scaricati il ${t}</p>
-    <button id="refresh">Aggiorna</button>`;
-  $('#refresh').onclick = () => load(true);
+    <p>Testi di <a href="https://onlyoroscopo.com/" target="_blank" rel="noopener">onlyoroscopo.com</a></p>`;
+}
+
+// ---------- tira giù per aggiornare ----------
+// la pagina scende con resistenza crescente e la ruota gira col dito;
+// oltre la soglia, al rilascio la ruota fa un giro completo e i dati si aggiornano
+function bindPullToRefresh() {
+  const MAX = 130, THRESHOLD = 76, K = 210;
+  const ptr = $('#ptr'), label = ptr.querySelector('span'), root = document.documentElement;
+  let y0 = null, x0 = 0, dist = 0, active = false, busy = false;
+
+  const set = d => {
+    dist = d;
+    root.style.setProperty('--pull', `${d}px`);
+    root.style.setProperty('--pull-deg', `${(d * 1.1).toFixed(1)}deg`);
+    root.style.setProperty('--pull-p', Math.min(d / THRESHOLD, 1));
+    const ready = d >= THRESHOLD;
+    ptr.classList.toggle('ready', ready);
+    if (!busy) label.textContent = ready ? 'Rilascia per aggiornare' : 'Tira per aggiornare';
+  };
+
+  window.addEventListener('touchstart', e => {
+    if (busy || window.scrollY > 0 || e.touches.length > 1 || e.target.closest('.sheet, .signs, .periods')) return;
+    y0 = e.touches[0].clientY; x0 = e.touches[0].clientX; active = false;
+  }, { passive: true });
+
+  window.addEventListener('touchmove', e => {
+    if (y0 === null) return;
+    const dy = e.touches[0].clientY - y0, dx = e.touches[0].clientX - x0;
+    if (!active) {
+      // decidi al primo movimento: verso il basso e più verticale che orizzontale
+      if (Math.abs(dy) < 6 && Math.abs(dx) < 6) return;
+      if (dy <= 0 || Math.abs(dx) > dy || window.scrollY > 0) { y0 = null; return; }
+      active = true;
+      root.classList.add('pulling');
+    }
+    e.preventDefault();
+    set(MAX * (1 - Math.exp(-Math.max(dy, 0) / K)));
+  }, { passive: false });
+
+  const end = async () => {
+    if (y0 === null) return;
+    y0 = null;
+    if (!active) return;
+    active = false;
+    root.classList.remove('pulling');
+    if (dist < THRESHOLD) { set(0); return; }
+
+    busy = true;
+    ptr.classList.add('busy');
+    label.textContent = 'Aggiorno…';
+    set(THRESHOLD * .72);
+    wheelAngle += 360; // un giro completo della ruota
+    $('#wheel').style.setProperty('--a', `${wheelAngle}deg`);
+    const t0 = Date.now();
+    await load(true, true);
+    await new Promise(r => setTimeout(r, Math.max(0, 700 - (Date.now() - t0)))); // lascia finire il giro
+    busy = false;
+    ptr.classList.remove('busy');
+    set(0);
+  };
+  window.addEventListener('touchend', end);
+  window.addEventListener('touchcancel', end);
 }
 
 function select(id, dir) {
@@ -398,9 +457,9 @@ function bindSwipe(el) {
 }
 
 // ---------- dati ----------
-async function load(force = false) {
+async function load(force = false, quiet = false) {
   const p = period;
-  if (force) toast('Aggiorno…');
+  if (force && !quiet) toast('Aggiorno…');
   try {
     const res = await fetch(`/api/oroscopo?period=${p}` + (force ? '&refresh' : ''), { cache: 'no-store' });
     const json = await res.json();
@@ -416,8 +475,9 @@ async function load(force = false) {
     if (force) toast('Aggiornato');
   } catch (err) {
     if (p !== period) return;
-    if (!data) $('#main').innerHTML = `<div class="state">Non riesco a scaricare l'oroscopo: ${esc(err.message)}.<br>Controlla che il server sia acceso e tocca Aggiorna.</div>`;
+    if (!data) $('#main').innerHTML = `<div class="state">Non riesco a scaricare l'oroscopo: ${esc(err.message)}.<br>Controlla che il server sia acceso, poi tira giù la pagina per riprovare.</div>`;
     renderFoot(err.message);
+    if (force) toast('Aggiornamento non riuscito');
   }
 }
 
@@ -438,6 +498,7 @@ renderPeriods();
 renderMain();
 bindSwipe($('#main'));
 bindSwipe($('.wheel-wrap'));
+bindPullToRefresh();
 load();
 requestAnimationFrame(() => document.querySelector(`.chip[data-sign="${current}"]`)?.scrollIntoView({ inline: 'center', block: 'nearest' }));
 

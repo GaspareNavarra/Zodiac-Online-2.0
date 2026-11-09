@@ -72,6 +72,8 @@ button { font: inherit; color: inherit; }
 }
 .wheel {
   position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible;
+  /* --a: angolo del segno scelto; --pull: quanto stai tirando giù la pagina */
+  transform: rotate(calc(var(--a, 0deg) + var(--pull-deg, 0deg)));
   transition: transform 1s var(--ease);
 }
 .wheel .ring { fill: none; stroke: var(--line); }
@@ -103,6 +105,31 @@ button { font: inherit; color: inherit; }
 }
 .fact .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--el); box-shadow: 0 0 10px var(--el); }
 .fact .k { color: var(--muted); }
+
+/* ---------------- tira giù per aggiornare ---------------- */
+.app { transform: translateY(var(--pull, 0px)); transition: transform .45s var(--ease); }
+.pulling .app, .pulling .wheel, .pulling .ptr { transition: none; }
+.ptr {
+  position: fixed; left: 0; right: 0; top: 0; z-index: 5; pointer-events: none;
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  padding-top: max(10px, env(safe-area-inset-top));
+  transform: translateY(calc(var(--pull, 0px) - 100%)); opacity: var(--pull-p, 0);
+  transition: transform .45s var(--ease), opacity .3s;
+}
+.ptr svg { width: 26px; height: 26px; transform: rotate(-90deg); overflow: visible; }
+.ptr .trk { fill: none; stroke: var(--line); stroke-width: 2.5; }
+.ptr .arc {
+  fill: none; stroke: var(--muted); stroke-width: 2.5; stroke-linecap: round;
+  stroke-dasharray: 75.4; stroke-dashoffset: calc(75.4 * (1 - var(--pull-p, 0)));
+  transition: stroke .2s;
+}
+.ptr span { font-size: .75em; color: var(--muted); }
+.ptr.ready .arc { stroke: var(--accent); }
+.ptr.ready span { color: var(--text); }
+.ptr.busy .arc { stroke: var(--accent); stroke-dashoffset: 52; animation: ptrspin .8s linear infinite; }
+@keyframes ptrspin { to { transform: rotate(360deg); } }
+.ptr.busy svg { transform: none; }
+.ptr .arc { transform-origin: 16px 16px; }
 
 /* ---------------- periodo (oggi / settimana / mese / anno) ---------------- */
 .periods {
@@ -224,7 +251,6 @@ button { font: inherit; color: inherit; }
 .foot { text-align: center; color: var(--muted); font-size: .74em; padding: 14px 0 0; }
 .foot p { margin: 4px 0; }
 .foot a { color: inherit; }
-.foot button { background: none; border: 1px solid var(--line); border-radius: 99px; cursor: pointer; color: var(--text); padding: 7px 14px; margin-top: 6px; font-size: 1em; }
 .state { text-align: center; color: var(--muted); padding: 40px 20px; }
 
 /* swipe: scivolata nella direzione giusta */

@@ -19,6 +19,11 @@
 <body>
   <div class="sky" aria-hidden="true"></div>
 
+  <div class="ptr" id="ptr" aria-hidden="true">
+    <svg viewBox="0 0 32 32"><circle class="trk" cx="16" cy="16" r="12"/><circle class="arc" cx="16" cy="16" r="12"/></svg>
+    <span>Tira per aggiornare</span>
+  </div>
+
   <div class="app">
     <section class="hero" id="hero">
       <div class="hero-top">
@@ -39,9 +44,9 @@
       <div class="facts" id="facts"></div>
     </section>
 
-    <div class="periods" id="periods" role="tablist" aria-label="Periodo dell'oroscopo"></div>
-
     <nav class="signs" id="signs" aria-label="Scegli il segno"></nav>
+
+    <div class="periods" id="periods" role="tablist" aria-label="Periodo dell'oroscopo"></div>
 
     <main id="main" aria-live="polite">
       <div class="state">Sto leggendo le stelle…</div>
