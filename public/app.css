@@ -326,12 +326,15 @@ main { touch-action: pan-y; }
 .seg button { text-align: center; font-size: .8em; padding: 10px 4px; }
 .seg.three { grid-template-columns: repeat(3, 1fr); }
 
-/* scelta dell'icona dell'app: 13 anteprime (luna + 12 segni) */
-/* minmax(0, 1fr) e min-width: 0: le anteprime (88px) si stringono invece di allargare il pannello */
-.icons { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; }
-.icons button { min-width: 0; border: 2px solid transparent; border-radius: 12px; padding: 2px; background: none; cursor: pointer; aspect-ratio: 1; }
+/* 13 icone in 3 righe (5 + 5 + 3): le icone restano quadrate tra 44 e 64px,
+   lo spazio in più va tra le colonne invece di allargarle o schiacciarle */
+.icons {
+  display: grid; grid-template-columns: repeat(5, clamp(44px, 16%, 64px));
+  justify-content: space-between; row-gap: 10px;
+}
+.icons button { width: 100%; aspect-ratio: 1; border: 2px solid transparent; border-radius: 14px; padding: 2px; background: none; cursor: pointer; }
 .icons button[aria-pressed="true"] { border-color: var(--accent); }
-.icons img { display: block; width: 100%; height: 100%; border-radius: 9px; }
+.icons img { display: block; width: 100%; aspect-ratio: 1; object-fit: contain; border-radius: 10px; }
 .opt .hint { margin: 10px 0 0; font-size: .78em; color: var(--muted); }
 /* terza opzione: un colore a scelta, il cerchio mostra il colore attuale */
 .seg .pick {
