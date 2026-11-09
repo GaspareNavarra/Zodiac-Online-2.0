@@ -118,8 +118,16 @@ function applyIcon() {
   const first = iconKey === null;
   iconKey = key;
   const fav = document.querySelector('link[rel=icon]');
-  if (icon === 'luna') { fav.type = 'image/svg+xml'; fav.href = 'icon.svg'; }
-  else { fav.type = 'image/png'; fav.href = drawIcon(64, icon, theme.accent).toDataURL('image/png'); }
+  const touch = document.querySelector('link[rel=apple-touch-icon]');
+  if (icon === 'luna') {
+    fav.type = 'image/svg+xml'; fav.href = 'icon.svg';
+    touch.href = 'apple-touch-icon.png';
+  } else {
+    fav.type = 'image/png'; fav.href = drawIcon(64, icon, theme.accent).toDataURL('image/png');
+    // iPhone: "Aggiungi alla schermata Home" usa questa immagine incorporata, anche quando
+    // il server online ha perso i file salvati (molti servizi li cancellano a ogni riavvio)
+    touch.href = drawIcon(180, icon, theme.accent).toDataURL('image/png');
+  }
 
   // All'avvio non si invia niente: il server serve già l'ultima icona scelta agli indirizzi standard
   // (apple-touch-icon.png, icon-192.png, manifest…). Su iPhone Safari e l'app installata hanno
@@ -136,8 +144,7 @@ function applyIcon() {
     try {
       const res = await fetch('/api/icon', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
       if (!res.ok || key !== iconKey) return;
-      // indirizzi nuovi, così il browser non riusa la copia vecchia
-      document.querySelector('link[rel=apple-touch-icon]').href = `apple-touch-icon.png?v=${key}`;
+      // indirizzo nuovo, così il browser non riusa il manifest vecchio
       document.querySelector('link[rel=manifest]').href = `manifest.webmanifest?v=${key}`;
     } catch {}
   }, 600);
