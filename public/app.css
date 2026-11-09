@@ -13,6 +13,7 @@ html, body, .sheet, .signs { scrollbar-width: none; -ms-overflow-style: none; }
 }
 
 body {
+  position: relative; /* il cielo stellato si estende su tutta la pagina */
   margin: 0;
   background: var(--bg);
   color: var(--text);
@@ -28,7 +29,7 @@ button { font: inherit; color: inherit; }
 
 /* cielo stellato */
 .sky {
-  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  position: absolute; inset: 0; /* non fixed: su iOS un elemento fixed in cima attiva la sfocatura della barra di stato */ pointer-events: none; z-index: 0;
   opacity: var(--stars-opacity);
   background-image:
     radial-gradient(1px 1px at 12% 18%, color-mix(in srgb, var(--text) 70%, transparent) 50%, transparent 51%),
@@ -48,7 +49,7 @@ button { font: inherit; color: inherit; }
 }
 
 /* ---------------- hero con ruota ---------------- */
-.hero { position: relative; padding-top: max(14px, env(safe-area-inset-top)); }
+.hero { position: relative; padding-top: calc(env(safe-area-inset-top, 0px) + 14px); }
 .hero-top { display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 2; }
 .day { margin: 0; font-size: .9em; color: var(--muted); font-weight: 500; }
 .day::first-letter { text-transform: uppercase; }
@@ -110,10 +111,11 @@ button { font: inherit; color: inherit; }
 .app { transform: translateY(var(--pull, 0px)); transition: transform .45s var(--ease); }
 .pulling .app, .pulling .wheel, .pulling .ptr { transition: none; }
 .ptr {
-  position: fixed; left: 0; right: 0; top: 0; z-index: 5; pointer-events: none;
+  position: absolute; left: 0; right: 0; top: 0; /* la pagina è già in cima quando si tira */ z-index: 5; pointer-events: none;
   display: flex; flex-direction: column; align-items: center; gap: 6px;
-  padding-top: max(10px, env(safe-area-inset-top));
-  transform: translateY(calc(var(--pull, 0px) - 100%)); opacity: var(--pull-p, 0);
+  padding-top: 10px;
+  /* parte da sotto la barra di stato, non dal bordo dello schermo */
+  transform: translateY(calc(var(--pull, 0px) - 100% + env(safe-area-inset-top, 0px))); opacity: var(--pull-p, 0);
   transition: transform .45s var(--ease), opacity .3s;
 }
 .ptr svg { width: 26px; height: 26px; transform: rotate(-90deg); overflow: visible; }

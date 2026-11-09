@@ -413,7 +413,7 @@ function bindPullToRefresh() {
     busy = true;
     ptr.classList.add('busy');
     label.textContent = 'Aggiorno…';
-    set(THRESHOLD * .72);
+    set(THRESHOLD); // resta abbastanza giù da mostrare rotella e scritta
     wheelAngle += 360; // un giro completo della ruota
     $('#wheel').style.setProperty('--a', `${wheelAngle}deg`);
     const t0 = Date.now();
