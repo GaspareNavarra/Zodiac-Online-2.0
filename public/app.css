@@ -157,11 +157,12 @@ button { font: inherit; color: inherit; }
   padding: 9px 4px; border-radius: 99px; font-size: .84em; font-weight: 500;
   color: var(--muted); transition: color .3s;
 }
-.periods button[aria-selected="true"] { color: var(--bg); }
+.periods button[aria-selected="true"] { color: var(--text); }
 /* la pillola scorre sotto la voce scelta */
 .periods .pill {
   position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc((100% - 8px) / 4);
-  border-radius: 99px; background: var(--text);
+  border-radius: 99px; /* scelta attiva: accento in trasparenza, bordo nel colore pieno */
+  background: color-mix(in srgb, var(--accent) 14%, transparent); border: 1px solid var(--accent);
   transform: translateX(calc(var(--at) * 100%)); transition: transform .45s var(--ease);
 }
 
@@ -181,7 +182,7 @@ button { font: inherit; color: inherit; }
 }
 .chip .g { font-size: 1.05em; line-height: 1; font-family: 'Segoe UI Symbol', 'Apple Symbols', 'Noto Sans Symbols', sans-serif; }
 .chip .n { font-size: .82em; font-weight: 500; }
-.chip[aria-current="true"] { background: var(--text); border-color: var(--text); color: var(--bg); }
+.chip[aria-current="true"] { background: color-mix(in srgb, var(--accent) 14%, transparent); border-color: var(--accent); color: var(--text); }
 .chip:active { transform: scale(.95); }
 
 /* ---------------- griglia blocchi ---------------- */
