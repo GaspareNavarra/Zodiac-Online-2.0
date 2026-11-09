@@ -144,6 +144,16 @@ const MIME = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=u
 const ICONS_DIR = path.join(DATA_DIR, 'icons');
 const ICON_KEY = new RegExp(`^(${SIGNS.join('|')})-[0-9a-f]{6}$`);
 const ICON_SIZES = [180, 192, 512];
+const ICON_CURRENT = path.join(ICONS_DIR, 'current.json');
+const STANDARD_ICONS = { '/apple-touch-icon.png': 180, '/icon-192.png': 192, '/icon-512.png': 512, '/icon-maskable-512.png': 512 };
+
+// l'ultima icona scelta, se è un segno con i file già salvati; altrimenti null (luna)
+function currentIcon() {
+  try {
+    const { key } = JSON.parse(fs.readFileSync(ICON_CURRENT, 'utf8'));
+    return ICON_KEY.test(key) && fs.existsSync(path.join(ICONS_DIR, `${key}-512.png`)) ? key : null;
+  } catch { return null; }
+}
 
 function sendJson(res, code, obj) {
   res.writeHead(code, { 'Content-Type': MIME['.json'], 'Cache-Control': 'no-store' });
@@ -162,6 +172,11 @@ http.createServer(async (req, res) => {
     }
     try {
       const { key, images } = JSON.parse(body);
+      fs.mkdirSync(ICONS_DIR, { recursive: true });
+      if (key === 'luna') { // torna all'icona originale
+        fs.writeFileSync(ICON_CURRENT, JSON.stringify({ key: 'luna' }));
+        return sendJson(res, 200, { ok: true });
+      }
       if (!ICON_KEY.test(key || '')) throw new Error('nome icona non valido');
       fs.mkdirSync(ICONS_DIR, { recursive: true });
       for (const size of ICON_SIZES) {
@@ -169,6 +184,7 @@ http.createServer(async (req, res) => {
         if (!m) throw new Error(`manca l'immagine da ${size}px`);
         fs.writeFileSync(path.join(ICONS_DIR, `${key}-${size}.png`), Buffer.from(m[1], 'base64'));
       }
+      fs.writeFileSync(ICON_CURRENT, JSON.stringify({ key }));
       return sendJson(res, 200, { ok: true });
     } catch (err) {
       return sendJson(res, 400, { error: err.message });
@@ -184,10 +200,21 @@ http.createServer(async (req, res) => {
     });
   }
 
-  if (url.pathname === '/manifest.webmanifest' && url.searchParams.has('icon')) {
-    const key = url.searchParams.get('icon');
+  // gli indirizzi standard delle icone servono l'ultima icona scelta: il telefono li legge
+  // all'installazione, da qualunque browser (su iPhone Safari e app installata non condividono le scelte)
+  const current = currentIcon();
+  if (current && STANDARD_ICONS[url.pathname]) {
+    return fs.readFile(path.join(ICONS_DIR, `${current}-${STANDARD_ICONS[url.pathname]}.png`), (err, buf) => {
+      if (err) { res.writeHead(404); return res.end('Non trovato'); }
+      res.writeHead(200, { 'Content-Type': 'image/png', 'Cache-Control': 'no-cache' });
+      res.end(buf);
+    });
+  }
+
+  if (url.pathname === '/manifest.webmanifest') {
+    const key = url.searchParams.get('icon') || current;
     const manifest = JSON.parse(fs.readFileSync(path.join(PUBLIC_DIR, 'manifest.webmanifest'), 'utf8'));
-    if (ICON_KEY.test(key) && fs.existsSync(path.join(ICONS_DIR, `${key}-512.png`))) {
+    if (ICON_KEY.test(key || '') && fs.existsSync(path.join(ICONS_DIR, `${key}-512.png`))) {
       manifest.icons = [192, 512].map(s => ({ src: `/icons/${key}-${s}.png`, sizes: `${s}x${s}`, type: 'image/png' }));
     }
     res.writeHead(200, { 'Content-Type': MIME['.webmanifest'], 'Cache-Control': 'no-store' });

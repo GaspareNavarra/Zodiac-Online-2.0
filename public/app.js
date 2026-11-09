@@ -115,28 +115,30 @@ function applyIcon() {
   const icon = byId[theme.icon] ? theme.icon : 'luna';
   const key = icon === 'luna' ? 'luna' : `${icon}-${theme.accent.slice(1).toLowerCase()}`;
   if (key === iconKey) return;
+  const first = iconKey === null;
   iconKey = key;
   const fav = document.querySelector('link[rel=icon]');
-  const touch = document.querySelector('link[rel=apple-touch-icon]');
-  const manifest = document.querySelector('link[rel=manifest]');
+  if (icon === 'luna') { fav.type = 'image/svg+xml'; fav.href = 'icon.svg'; }
+  else { fav.type = 'image/png'; fav.href = drawIcon(64, icon, theme.accent).toDataURL('image/png'); }
+
+  // All'avvio non si invia niente: il server serve già l'ultima icona scelta agli indirizzi standard
+  // (apple-touch-icon.png, icon-192.png, manifest…). Su iPhone Safari e l'app installata hanno
+  // memorie separate: se Safari inviasse la sua scelta a ogni apertura, cancellerebbe quella dell'app.
+  if (first) return;
   clearTimeout(iconTimer);
-  if (icon === 'luna') {
-    fav.href = 'icon.svg'; fav.type = 'image/svg+xml';
-    touch.href = 'apple-touch-icon.png';
-    manifest.href = 'manifest.webmanifest';
-    return;
-  }
-  fav.type = 'image/png';
-  fav.href = drawIcon(64, icon, theme.accent).toDataURL('image/png');
   // al server solo quando l'accento smette di cambiare (il selettore colore manda molti eventi)
   iconTimer = setTimeout(async () => {
-    const images = {};
-    for (const s of [180, 192, 512]) images[s] = drawIcon(s, icon, theme.accent).toDataURL('image/png');
+    const body = { key };
+    if (icon !== 'luna') {
+      body.images = {};
+      for (const s of [180, 192, 512]) body.images[s] = drawIcon(s, icon, theme.accent).toDataURL('image/png');
+    }
     try {
-      const res = await fetch('/api/icon', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ key, images }) });
+      const res = await fetch('/api/icon', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
       if (!res.ok || key !== iconKey) return;
-      touch.href = `/icons/${key}-180.png`;
-      manifest.href = `/manifest.webmanifest?icon=${key}`;
+      // indirizzi nuovi, così il browser non riusa la copia vecchia
+      document.querySelector('link[rel=apple-touch-icon]').href = `apple-touch-icon.png?v=${key}`;
+      document.querySelector('link[rel=manifest]').href = `manifest.webmanifest?v=${key}`;
     } catch {}
   }, 600);
 }

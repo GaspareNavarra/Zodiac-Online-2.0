@@ -1,7 +1,9 @@
 // Service worker: app shell in cache, dati "network first" con fallback offline.
-const VERSION = 'oroscopo-v17';
-const SHELL = ['/', '/index.html', '/theme.css', '/app.css', '/app.js', '/manifest.webmanifest',
-  '/icon.svg', '/icon-192.png', '/icon-512.png', '/icon-maskable-512.png', '/apple-touch-icon.png'];
+const VERSION = 'oroscopo-v18';
+const SHELL = ['/', '/index.html', '/theme.css', '/app.css', '/app.js',
+  '/icon.svg'];
+
+const ICON_PATHS = ['/manifest.webmanifest', '/apple-touch-icon.png', '/icon-192.png', '/icon-512.png', '/icon-maskable-512.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(VERSION).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
@@ -39,7 +41,8 @@ self.addEventListener('fetch', e => {
   }
 
   // icone personalizzate e manifest con l'icona scelta: sempre dalla rete
-  if (url.pathname.startsWith("/icons/") || (url.pathname === "/manifest.webmanifest" && url.search)) return;
+  // (il server serve l'ultima icona scelta anche agli indirizzi standard: niente copie in cache)
+  if (url.pathname.startsWith("/icons/") || ICON_PATHS.includes(url.pathname)) return;
 
   // file dell'app (stessa origine): stale-while-revalidate
   if (url.origin === location.origin) {
