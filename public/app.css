@@ -336,6 +336,14 @@ main { touch-action: pan-y; }
 .icons button[aria-pressed="true"] { border-color: var(--accent); }
 .icons img { display: block; width: 100%; aspect-ratio: 1; object-fit: contain; border-radius: 10px; }
 .opt .hint { margin: 10px 0 0; font-size: .78em; color: var(--muted); }
+/* avviso: stessa forma dei pulsanti del pannello, sempre nel colore d'accento */
+.notice {
+  display: flex; align-items: center; gap: 12px; margin-top: 12px;
+  padding: 12px 14px; border-radius: 12px;
+  border: 1px solid var(--accent); background: color-mix(in srgb, var(--accent) 14%, transparent);
+}
+.notice svg { width: 22px; height: 22px; flex: none; color: var(--accent); }
+.notice p { margin: 0; font-size: .8em; line-height: 1.4; }
 /* terza opzione: un colore a scelta, il cerchio mostra il colore attuale */
 .seg .pick {
   display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;

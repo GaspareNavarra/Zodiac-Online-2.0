@@ -154,6 +154,21 @@ function drawIcon(size, icon, accent) {
   return c;
 }
 
+// sistema del dispositivo, per spiegare come reinstallare l'app con la nuova icona
+function devicePlatform() {
+  const ua = navigator.userAgent;
+  // iPadOS si presenta come Mac: lo distingue lo schermo touch
+  if (/iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1)) return 'ios';
+  if (/Android/i.test(ua)) return 'android';
+  return 'pc';
+}
+
+const ICON_HINTS = {
+  ios: "Per vederla sulla schermata Home, togli l'app e aggiungila di nuovo da Safari: scegli qui l'icona, poi Condividi → Aggiungi alla schermata Home.",
+  android: "Per vederla sulla schermata Home, disinstalla l'app e installala di nuovo da Chrome: menu ⋮ → Installa app.",
+  pc: "Nella scheda del browser l'icona cambia subito. Per vederla anche nell'app installata, disinstallala e installala di nuovo dall'icona di installazione nella barra degli indirizzi.",
+};
+
 let iconKey = null, iconTimer;
 function applyIcon() {
   const icon = byId[theme.icon] ? theme.icon : 'luna';
@@ -669,6 +684,7 @@ renderMain();
 bindSwipe($('#main'));
 bindSwipe($('.wheel-wrap'));
 bindPullToRefresh();
+$('#iconHint').textContent = ICON_HINTS[devicePlatform()];
 load();
 requestAnimationFrame(() => document.querySelector(`.chip[data-sign="${current}"]`)?.scrollIntoView({ inline: 'center', block: 'nearest' }));
 
