@@ -217,6 +217,9 @@ http.createServer(async (req, res) => {
     if (ICON_KEY.test(key || '') && fs.existsSync(path.join(ICONS_DIR, `${key}-512.png`))) {
       manifest.icons = [192, 512].map(s => ({ src: `/icons/${key}-${s}.png`, sizes: `${s}x${s}`, type: 'image/png' }));
     }
+    // il tema scelto nel browser accompagna l'installazione: l'app lo legge al primo avvio
+    const t = url.searchParams.get('t');
+    if (t && /^[A-Za-z0-9_-]{1,3000}$/.test(t)) manifest.start_url = `/?t=${t}`;
     res.writeHead(200, { 'Content-Type': MIME['.webmanifest'], 'Cache-Control': 'no-store' });
     return res.end(JSON.stringify(manifest));
   }

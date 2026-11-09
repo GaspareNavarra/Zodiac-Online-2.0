@@ -56,7 +56,35 @@ const store = {
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
 };
 
-let theme = { ...DEFAULTS, ...store.get('oroscopo.theme', {}) };
+// tiene solo valori validi: un tema arriva anche da un link (?t=) o da un testo incollato
+function cleanTheme(o) {
+  const out = {};
+  if (!o || typeof o !== 'object') return out;
+  const hex = v => typeof v === 'string' && /^#[0-9a-f]{6}$/i.test(v);
+  for (const [k] of COLOR_FIELDS) if (hex(o[k])) out[k] = o[k];
+  if (PRESETS[o.preset] || o.preset === null) out.preset = o.preset;
+  if (FONTS[o.font]) out.font = o.font;
+  if (RATING_STYLES.some(([id]) => id === o.rating)) out.rating = o.rating;
+  for (const [k, lo, hi] of [['scale', .85, 1.25], ['radius', 0, 36], ['stars', 0, 1]]) {
+    if (typeof o[k] === 'number' && o[k] >= lo && o[k] <= hi) out[k] = o[k];
+  }
+  if (o.meter === 'el' || o.meter === 'accent' || hex(o.meter)) out.meter = o.meter;
+  if (o.icon === 'luna' || byId[o.icon]) out.icon = o.icon;
+  return out;
+}
+
+// Il tema viaggia nell'indirizzo (?t=…) e nello start_url del manifest. Su iPhone Safari e
+// l'app installata hanno memorie separate: al primo avvio l'app, ancora vuota, lo legge da lì.
+const encTheme = o => btoa(String.fromCharCode(...new TextEncoder().encode(JSON.stringify(o))))
+  .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+const decTheme = s => JSON.parse(new TextDecoder().decode(
+  Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0))));
+const themeFromUrl = (() => {
+  try { const t = new URLSearchParams(location.search).get('t'); return t ? cleanTheme(decTheme(t)) : null; }
+  catch { return null; }
+})();
+
+let theme = { ...DEFAULTS, ...(store.get('oroscopo.theme', null) ? cleanTheme(store.get('oroscopo.theme', {})) : themeFromUrl || {}) };
 let current = store.get('oroscopo.sign', 'ariete');
 let period = periodById[store.get('oroscopo.period', '')] ? store.get('oroscopo.period', '') : 'giornaliero';
 const dataBy = {}; // un set di dati per periodo
@@ -80,6 +108,22 @@ function applyTheme() {
   document.querySelector('meta[name=theme-color]').content = theme.bg;
   store.set('oroscopo.theme', theme);
   applyIcon();
+  syncInstallUrl();
+}
+
+// indirizzo e manifest portano il tema attuale: chi installa l'app da qui la ritrova uguale
+let installTimer;
+function syncInstallUrl() {
+  clearTimeout(installTimer);
+  installTimer = setTimeout(() => {
+    const t = encTheme(theme);
+    try {
+      const u = new URL(location.href);
+      u.searchParams.set('t', t);
+      history.replaceState(null, '', u.pathname + u.search + u.hash);
+    } catch {}
+    document.querySelector('link[rel=manifest]').href = `manifest.webmanifest?t=${t}`;
+  }, 300);
 }
 
 // ---------- icona dell'app ----------
@@ -142,10 +186,7 @@ function applyIcon() {
       for (const s of [180, 192, 512]) body.images[s] = drawIcon(s, icon, theme.accent).toDataURL('image/png');
     }
     try {
-      const res = await fetch('/api/icon', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-      if (!res.ok || key !== iconKey) return;
-      // indirizzo nuovo, così il browser non riusa il manifest vecchio
-      document.querySelector('link[rel=manifest]').href = `manifest.webmanifest?v=${key}`;
+      await fetch('/api/icon', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
     } catch {}
   }, 600);
 }
@@ -277,7 +318,7 @@ function bindSettings() {
     try { txt = await navigator.clipboard.readText(); } catch {}
     if (!txt || !txt.trim().startsWith('{')) txt = prompt('Incolla qui il tema copiato:');
     if (!txt) return;
-    try { setTheme({ ...JSON.parse(txt) }, true); toast('Tema incollato'); }
+    try { setTheme(cleanTheme(JSON.parse(txt)), true); toast('Tema incollato'); }
     catch { toast('Il testo incollato non è un tema valido'); }
   };
 }
