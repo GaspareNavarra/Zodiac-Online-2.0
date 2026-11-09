@@ -133,6 +133,18 @@ button { font: inherit; color: inherit; }
 .ptr.busy svg { transform: none; }
 .ptr .arc { transform-origin: 16px 16px; }
 
+/* fine aggiornamento: la rotella si chiude e dentro si disegna la spunta */
+.ptr .chk {
+  fill: none; stroke: var(--accent); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 18; stroke-dashoffset: 18; opacity: 0;
+}
+.ptr.done svg { transform: none; }
+.ptr.done .arc { stroke: var(--accent); stroke-dashoffset: 0; transition: stroke-dashoffset .35s var(--ease); }
+.ptr.done .chk { opacity: 1; stroke-dashoffset: 0; transition: stroke-dashoffset .4s var(--ease) .2s; }
+.ptr.done span { color: var(--accent); }
+/* ritorno lento al rilascio dopo l'aggiornamento */
+.settling .app, .settling .ptr { transition-duration: .8s, .5s; }
+
 /* ---------------- periodo (oggi / settimana / mese / anno) ---------------- */
 .periods {
   --at: 0;

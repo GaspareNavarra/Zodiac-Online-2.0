@@ -416,12 +416,23 @@ function bindPullToRefresh() {
     set(THRESHOLD); // resta abbastanza giù da mostrare rotella e scritta
     wheelAngle += 360; // un giro completo della ruota
     $('#wheel').style.setProperty('--a', `${wheelAngle}deg`);
+    const wait = ms => new Promise(r => setTimeout(r, ms));
     const t0 = Date.now();
-    await load(true, true);
-    await new Promise(r => setTimeout(r, Math.max(0, 700 - (Date.now() - t0)))); // lascia finire il giro
-    busy = false;
+    const ok = await load(true, true);
+    await wait(Math.max(0, 700 - (Date.now() - t0))); // lascia finire il giro
     ptr.classList.remove('busy');
-    set(0);
+    if (ok) {
+      // la rotella si chiude in una spunta, resta un attimo, poi la pagina risale piano
+      ptr.classList.add('done');
+      label.textContent = 'Aggiornato';
+      await wait(900);
+    }
+    root.classList.add('settling');
+    set(0); // ancora "busy": la scritta resta "Aggiornato" mentre sfuma
+    await wait(700);
+    busy = false;
+    ptr.classList.remove('done');
+    root.classList.remove('settling');
   };
   window.addEventListener('touchend', end);
   window.addEventListener('touchcancel', end);
@@ -472,12 +483,14 @@ async function load(force = false, quiet = false) {
     $('#day').textContent = periodLabel(data);
     if (changed) renderMain();
     renderFoot(json.warning || (json.offline ? 'Sei offline: stai vedendo l’ultimo oroscopo scaricato' : null));
-    if (force) toast('Aggiornato');
+    if (force && !quiet) toast('Aggiornato');
+    return true;
   } catch (err) {
     if (p !== period) return;
     if (!data) $('#main').innerHTML = `<div class="state">Non riesco a scaricare l'oroscopo: ${esc(err.message)}.<br>Controlla che il server sia acceso, poi tira giù la pagina per riprovare.</div>`;
     renderFoot(err.message);
     if (force) toast('Aggiornamento non riuscito');
+    return false;
   }
 }
 
