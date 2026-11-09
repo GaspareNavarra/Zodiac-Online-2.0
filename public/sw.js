@@ -1,5 +1,5 @@
 // Service worker: app shell in cache, dati "network first" con fallback offline.
-const VERSION = 'oroscopo-v24';
+const VERSION = 'oroscopo-v25';
 const SHELL = ['/', '/index.html', '/theme.css', '/app.css', '/app.js',
   '/icon.svg'];
 

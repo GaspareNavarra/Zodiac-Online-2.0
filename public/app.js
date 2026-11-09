@@ -349,6 +349,8 @@ function buildWheel() {
   SIGNS.forEach((s, i) => {
     const a = (i * 30 - 90) * Math.PI / 180;
     const x = (Math.cos(a) * R).toFixed(1), y = (Math.sin(a) * R).toFixed(1);
+    // area di tocco invisibile: il glifo da solo è troppo piccolo per il dito
+    svg += `<circle class="hit" data-sign="${s.id}" cx="${x}" cy="${y}" r="21"/>`;
     svg += `<text class="gl" data-sign="${s.id}" x="${x}" y="${y}" transform="rotate(${i * 30} ${x} ${y})">${s.g}${VS}<title>${s.name}</title></text>`;
   });
   const wheel = $('#wheel');

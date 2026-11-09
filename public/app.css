@@ -86,9 +86,11 @@ button { font: inherit; color: inherit; }
   cursor: pointer; transition: fill .4s, font-size .4s;
 }
 .wheel .gl.on { fill: var(--accent); font-size: 26px; }
+.wheel .hit { fill: transparent; cursor: pointer; }
+.wheel .gl { pointer-events: none; } /* il tocco lo prende il cerchio .hit sotto */
 .wheel .marker { fill: var(--accent); }
 
-.title { position: relative; text-align: center; z-index: 1; padding: 0 30px; }
+.title { position: relative; text-align: center; z-index: 1; padding: 0 30px; pointer-events: none; } /* i nomi lunghi coprono i segni ai lati: i tocchi passano alla ruota */
 .title h1 {
   margin: 0; font-family: var(--font-display); font-weight: 500;
   font-size: clamp(2.4em, 13vw, 3.3em); line-height: 1; letter-spacing: -.02em;
