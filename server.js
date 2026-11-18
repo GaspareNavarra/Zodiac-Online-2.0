@@ -17,7 +17,19 @@ const CHECK_EVERY_MS = 60 * 60 * 1000; // ricontrolla ogni ora
 const SIGNS = ['ariete', 'toro', 'gemelli', 'cancro', 'leone', 'vergine',
   'bilancia', 'scorpione', 'sagittario', 'capricorno', 'acquario', 'pesci'];
 
-fs.mkdirSync(DATA_DIR, { recursive: true });
+// Su Vercel (e simili) il disco è in sola lettura: i file sono solo una copia di comodo,
+// l'oroscopo resta comunque in memoria e viene servito lo stesso.
+let canWrite = true;
+function saveFile(file, text) {
+  if (!canWrite) return;
+  try {
+    fs.mkdirSync(path.dirname(file), { recursive: true });
+    fs.writeFileSync(file, text);
+  } catch (err) {
+    canWrite = false;
+    console.warn(`[${new Date().toLocaleString("it-IT")}] disco non scrivibile, tengo i dati solo in memoria (${err.code || err.message})`);
+  }
+}
 
 // ---------- parsing ----------
 const ENTITIES = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ',
@@ -116,10 +128,10 @@ function refresh(period) {
     for (const s of Object.values(signs)) if (s.day) counts[s.day] = (counts[s.day] || 0) + 1;
     const day = Object.entries(counts).sort((x, y) => y[1] - x[1])[0]?.[0] || null;
     const data = { period, day, fetchedAt: new Date().toISOString(), sourceUpdated: latestModified, signs };
-    fs.writeFileSync(latestFile(period), JSON.stringify(data, null, 2));
+    saveFile(latestFile(period), JSON.stringify(data, null, 2));
     // archivio: un file per giorno di pubblicazione
     const prefix = period === 'giornaliero' ? '' : `${period}-`;
-    fs.writeFileSync(path.join(DATA_DIR, `${prefix}${latestModified.slice(0, 10)}.json`), JSON.stringify(data, null, 2));
+    saveFile(path.join(DATA_DIR, `${prefix}${latestModified.slice(0, 10)}.json`), JSON.stringify(data, null, 2));
     cache[period] = data;
     console.log(`[${new Date().toLocaleString('it-IT')}] aggiornato ${period}: ${data.day} (${Object.keys(signs).length} segni)`);
     return data;
